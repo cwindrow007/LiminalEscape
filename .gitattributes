@@ -2,3 +2,4 @@
 .umap filter=lfs diff=lfs merge=lfs -text
 Content/Lvl0_BuiltData.uasset filter=lfs diff=lfs merge=lfs -text
 P:/Game/BackroomsGame/Content/ANimations/emote1_slow_.uasset filter=lfs diff=lfs merge=lfs -text
+P:/Game/BackroomsGame/Content/ANimations/emote1_slow_.uasset filter=lfs diff=lfs merge=lfs -text
