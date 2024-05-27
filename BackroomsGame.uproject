@@ -30,6 +30,10 @@
 		{
 			"Name": "Volumetrics",
 			"Enabled": true
+		},
+		{
+			"Name": "SunPosition",
+			"Enabled": true
 		}
 	]
 }
