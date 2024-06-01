@@ -26,9 +26,8 @@ void ALevel94HouseGen::BeginPlay()
     for (TActorIterator<ALandscape> It(GetWorld()); It; ++It)
     {
         Landscapes.Add(*It);
-        break; // Assuming there's only one landscape
     }
-    if(Landscapes.Num() > 0)
+    if (Landscapes.Num() > 0)
     {
         UE_LOG(LogTemp, Log, TEXT("Found %d Landscape"), Landscapes.Num());
     }
@@ -63,9 +62,10 @@ void ALevel94HouseGen::PlaceHouses()
     {
         if (!Landscape) continue;
         
-        for(int32 i =0 ; i < HousePerRow; i++)
+        for(int32 i = 0 ; i < HousePerRow; i++)
         {
-            for(int32 j = 0; j < HousePerRow; j++){
+            for(int32 j = 0; j < HousePerRow; j++)
+                {
                 int32 HouseIndex = i * HousePerRow + j;
                 if(HouseIndex >= NumHouses)
                 {
@@ -75,7 +75,7 @@ void ALevel94HouseGen::PlaceHouses()
                 FVector Location = FVector(i * Spacing, j * Spacing , 0);
                 Location.Z = GetLandscapeHeightAtLocation(Location, Landscape);
 
-                UE_LOG(LogTemp, Log, TEXT("House %d Location : %s"),i, *Location.ToString());
+                UE_LOG(LogTemp, Log, TEXT("House %d Location : %s"),HouseIndex, *Location.ToString(), *Landscape->GetName());
 
                 FActorSpawnParameters SpawnParams;
                 AStaticMeshActor* HouseActor = GetWorld()->SpawnActor<AStaticMeshActor>(Location, FRotator::ZeroRotator, SpawnParams);
