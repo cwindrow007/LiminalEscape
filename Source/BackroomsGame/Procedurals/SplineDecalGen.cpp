@@ -1,3 +1,5 @@
+#pragma once
+
 #include "SplineDecalGen.h"
 #include "Components/SplineComponent.h"
 #include "Engine/World.h"
