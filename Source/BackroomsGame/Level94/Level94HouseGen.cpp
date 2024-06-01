@@ -1,3 +1,6 @@
+#pragma once
+
+
 #include "Level94HouseGen.h"
 #include "Engine/World.h"
 #include "Landscape.h"
@@ -75,7 +78,7 @@ void ALevel94HouseGen::PlaceHouses()
                 FVector Location = FVector(i * Spacing, j * Spacing , 0);
                 Location.Z = GetLandscapeHeightAtLocation(Location, Landscape);
 
-                UE_LOG(LogTemp, Log, TEXT("House %d Location : %s"),HouseIndex, *Location.ToString(), *Landscape->GetName());
+                UE_LOG(LogTemp, Log, TEXT("House %d Location : %s"), HouseIndex, *Location.ToString(), *Landscape->GetName());
 
                 FActorSpawnParameters SpawnParams;
                 AStaticMeshActor* HouseActor = GetWorld()->SpawnActor<AStaticMeshActor>(Location, FRotator::ZeroRotator, SpawnParams);
