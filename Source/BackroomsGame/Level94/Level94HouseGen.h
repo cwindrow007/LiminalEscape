@@ -41,5 +41,11 @@ private:
 	UPROPERTY(EditAnywhere, Category = "House")
 	float Spacing;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "House", meta = (AllowPrivateAccess =  "true"))
+	float HeightOffSet;
+
+	UPROPERTY(EditAnywhere, Category = "House")
+	int32 RandomSeed;
+
 	TArray<ALandscape*> Landscapes;
 };

@@ -16,6 +16,11 @@ ALevel94HouseGen::ALevel94HouseGen()
 {
     // Set this actor to call Tick() every frame. You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
+
+    //House HeightOffset
+
+    HeightOffSet = 100.0f;
+    RandomSeed = 12345;
 }
 
 // Called when the game starts or when spawned
@@ -58,14 +63,22 @@ void ALevel94HouseGen::PlaceHouses()
         return;
     }
     UE_LOG(LogTemp, Log, TEXT("Placing Houses"));
+
+    FRandomStream RandomStream(RandomSeed);
+    
     int32 TotalLandscapes = Landscapes.Num();
     int32 HousesPerLandScape = NumHouses / TotalLandscapes;
+    
     for (int32 LandscapeIndex = 0; LandscapeIndex < TotalLandscapes; ++LandscapeIndex)
     {
         ALandscape* Landscape = Landscapes[LandscapeIndex];
         if (!Landscape) continue;
 
         int32 HousePerRow = FMath::CeilToInt(FMath::Sqrt(static_cast<float>(NumHouses)));
+        FVector LandscapeOrigin;
+        FVector LandscapeBounds;
+        Landscape -> GetActorBounds(false, LandscapeOrigin, LandscapeBounds);
+        
         for(int32 i = 0 ; i < HousePerRow; i++)
         {
             for(int32 j = 0; j < HousePerRow; j++)
@@ -76,8 +89,10 @@ void ALevel94HouseGen::PlaceHouses()
                     break;
                 }
         
-                FVector Location = FVector(i * Spacing + LandscapeIndex * 10000, j * Spacing + LandscapeIndex * 10000 , 0);
-                Location.Z = GetLandscapeHeightAtLocation(Location, Landscape);
+                FVector Location;
+                Location.X = RandomStream.FRandRange(LandscapeOrigin.X - LandscapeBounds.X / 2, LandscapeOrigin.X + LandscapeBounds.X / 2);
+                Location.Y = RandomStream.FRandRange(LandscapeOrigin.Y - LandscapeBounds.Y / 2, LandscapeOrigin.Y + LandscapeBounds.Y / 2);
+                Location.Z = GetLandscapeHeightAtLocation(Location, Landscape) + HeightOffSet;
 
                 UE_LOG(LogTemp, Log, TEXT("House %d Location : %s"), HouseIndex, *Location.ToString(), *Landscape->GetName());
 
