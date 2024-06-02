@@ -58,11 +58,14 @@ void ALevel94HouseGen::PlaceHouses()
         return;
     }
     UE_LOG(LogTemp, Log, TEXT("Placing Houses"));
-    int32 HousePerRow = FMath::CeilToInt(FMath::Sqrt(static_cast<float>(NumHouses)));
-    for (ALandscape* Landscape : Landscapes)
+    int32 TotalLandscapes = Landscapes.Num();
+    int32 HousesPerLandScape = NumHouses / TotalLandscapes;
+    for (int32 LandscapeIndex = 0; LandscapeIndex < TotalLandscapes; ++LandscapeIndex)
     {
+        ALandscape* Landscape = Landscapes[LandscapeIndex];
         if (!Landscape) continue;
-        
+
+        int32 HousePerRow = FMath::CeilToInt(FMath::Sqrt(static_cast<float>(NumHouses)));
         for(int32 i = 0 ; i < HousePerRow; i++)
         {
             for(int32 j = 0; j < HousePerRow; j++)
@@ -73,7 +76,7 @@ void ALevel94HouseGen::PlaceHouses()
                     break;
                 }
         
-                FVector Location = FVector(i * Spacing, j * Spacing , 0);
+                FVector Location = FVector(i * Spacing + LandscapeIndex * 10000, j * Spacing + LandscapeIndex * 10000 , 0);
                 Location.Z = GetLandscapeHeightAtLocation(Location, Landscape);
 
                 UE_LOG(LogTemp, Log, TEXT("House %d Location : %s"), HouseIndex, *Location.ToString(), *Landscape->GetName());
