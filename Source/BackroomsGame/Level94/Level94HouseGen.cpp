@@ -76,24 +76,19 @@ void ALevel94HouseGen::PlaceHouses()
 
         int32 HousePerRow = FMath::CeilToInt(FMath::Sqrt(static_cast<float>(NumHouses)));
         FVector LandscapeOrigin;
-        FVector LandscapeBounds;
-        Landscape -> GetActorBounds(false, LandscapeOrigin, LandscapeBounds);
-        
-        for(int32 i = 0 ; i < HousePerRow; i++)
-        {
-            for(int32 j = 0; j < HousePerRow; j++)
-                {
-                int32 HouseIndex = i * HousePerRow + j;
-                if(HouseIndex >= NumHouses)
-                {
-                    break;
-                }
-        
-                FVector Location;
-                Location.X = RandomStream.FRandRange(LandscapeOrigin.X - LandscapeBounds.X / 2, LandscapeOrigin.X + LandscapeBounds.X / 2);
-                Location.Y = RandomStream.FRandRange(LandscapeOrigin.Y - LandscapeBounds.Y / 2, LandscapeOrigin.Y + LandscapeBounds.Y / 2);
-                Location.Z = GetLandscapeHeightAtLocation(Location, Landscape) + HeightOffSet;
+        FVector LandscapeBoundsExtent;
+        Landscape -> GetActorBounds(false, LandscapeOrigin, LandscapeBoundsExtent);
 
+        FVector LandscapeMin = LandscapeOrigin - LandscapeBoundsExtent;
+        FVector LandscapeMax = LandscapeOrigin + LandscapeBoundsExtent;
+
+        for(int32 HouseIndex = 0; HouseIndex < HousesPerLandScape; ++HouseIndex)
+        {
+            FVector Location;
+            Location.X = RandomStream.FRandRange(LandscapeMin.X, LandscapeMax.X);
+            Location.Y = RandomStream.FRandRange(LandscapeMin.Y, LandscapeMax.X);
+            Location.Z = GetLandscapeHeightAtLocation(Location, Landscape) + HeightOffSet;
+            
                 UE_LOG(LogTemp, Log, TEXT("House %d Location : %s"), HouseIndex, *Location.ToString(), *Landscape->GetName());
 
                 FActorSpawnParameters SpawnParams;
@@ -104,22 +99,22 @@ void ALevel94HouseGen::PlaceHouses()
                     if (MeshComponent)
                     {
                         MeshComponent->SetStaticMesh(HouseMesh);
-                        UE_LOG(LogTemp, Log, TEXT("House %d spawned Succesfully"),i);
+                        UE_LOG(LogTemp, Log, TEXT("House %d spawned Succesfully"),HouseIndex);
                     }
                     else
                     {
-                        UE_LOG(LogTemp, Warning, TEXT("House %d mesh component not found"), i);
+                        UE_LOG(LogTemp, Warning, TEXT("House %d mesh component not found"), HouseIndex);
                     }
           
                 }
                 else
                 {
-                    UE_LOG(LogTemp, Warning, TEXT("House %d not spawned"), i);
+                    UE_LOG(LogTemp, Warning, TEXT("House %d not spawned"), HouseIndex);
                 }
             }
         }
     }
-}
+
 
     
 float ALevel94HouseGen::GetLandscapeHeightAtLocation(const FVector& Location, const ALandscape* Landscape) const
