@@ -30,7 +30,8 @@ public:
 
 private:
 	void PlaceHouses();
-	float GetLandscapeHeightAtLocation(const FVector& Location, const ALandscape* Landscape) const;
+	bool GetLandscapeHeightAndNormalAtLocation(const FVector& Location, const ALandscape* Landscape, float& OutHeight, FVector& OutNormal) const;
+	float GenerateRestrictedRotation(FRandomStream& RandomStream) const;
 
 	UPROPERTY(EditAnywhere, Category = "House")
 	UStaticMesh* HouseMesh;

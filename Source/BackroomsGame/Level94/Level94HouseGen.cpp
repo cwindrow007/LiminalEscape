@@ -1,4 +1,3 @@
-
 #include "Level94HouseGen.h"
 #include "Engine/World.h"
 #include "Landscape.h"
@@ -17,10 +16,9 @@ ALevel94HouseGen::ALevel94HouseGen()
     // Set this actor to call Tick() every frame. You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
-    //House HeightOffset
-
+    // Initialize default values
     HeightOffSet = 100.0f;
-    RandomSeed = 12345;
+    RandomSeed = 12345; // Set a default seed value
 }
 
 // Called when the game starts or when spawned
@@ -28,22 +26,22 @@ void ALevel94HouseGen::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Find the landscape in the level
+    // Find the landscapes in the level
     for (TActorIterator<ALandscape> It(GetWorld()); It; ++It)
     {
         Landscapes.Add(*It);
     }
     if (Landscapes.Num() > 0)
     {
-        UE_LOG(LogTemp, Log, TEXT("Found %d Landscape"), Landscapes.Num());
+        UE_LOG(LogTemp, Log, TEXT("Found %d Landscapes"), Landscapes.Num());
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("2. NoLandscape Found in this level"));
+        UE_LOG(LogTemp, Warning, TEXT("No Landscape Found in this level"));
     }
-    if(!HouseMesh)
+    if (!HouseMesh)
     {
-        UE_LOG(LogTemp,Warning, TEXT("3. No House Mesh Assigned"))
+        UE_LOG(LogTemp, Warning, TEXT("No House Mesh Assigned"));
     }
 
     PlaceHouses();
@@ -77,7 +75,7 @@ void ALevel94HouseGen::PlaceHouses()
         int32 HousePerRow = FMath::CeilToInt(FMath::Sqrt(static_cast<float>(NumHouses)));
         FVector LandscapeOrigin;
         FVector LandscapeBoundsExtent;
-        Landscape -> GetActorBounds(false, LandscapeOrigin, LandscapeBoundsExtent);
+        Landscape->GetActorBounds(false, LandscapeOrigin, LandscapeBoundsExtent);
 
         FVector LandscapeMin = LandscapeOrigin - LandscapeBoundsExtent;
         FVector LandscapeMax = LandscapeOrigin + LandscapeBoundsExtent;
@@ -86,26 +84,34 @@ void ALevel94HouseGen::PlaceHouses()
         {
             FVector Location;
             Location.X = RandomStream.FRandRange(LandscapeMin.X, LandscapeMax.X);
-            Location.Y = RandomStream.FRandRange(LandscapeMin.Y, LandscapeMax.X);
-            Location.Z = GetLandscapeHeightAtLocation(Location, Landscape) + HeightOffSet;
-            
-                UE_LOG(LogTemp, Log, TEXT("House %d Location : %s"), HouseIndex, *Location.ToString(), *Landscape->GetName());
+            Location.Y = RandomStream.FRandRange(LandscapeMin.Y, LandscapeMax.Y);
+
+            float Height;
+            FVector Normal;
+            if (GetLandscapeHeightAndNormalAtLocation(Location, Landscape, Height, Normal))
+            {
+                Location.Z = Height + HeightOffSet;
+
+                // Generate a rotation based on the normal of the landscape
+                FRotator Rotation = FRotationMatrix::MakeFromZ(Normal).Rotator();
+                Rotation.Yaw = RandomStream.FRandRange(0.0f, 360.0f);
+
+                UE_LOG(LogTemp, Log, TEXT("House %d Location: %s on Landscape %s with Rotation: %s"), HouseIndex, *Location.ToString(), *Landscape->GetName(), *Rotation.ToString());
 
                 FActorSpawnParameters SpawnParams;
-                AStaticMeshActor* HouseActor = GetWorld()->SpawnActor<AStaticMeshActor>(Location, FRotator::ZeroRotator, SpawnParams);
+                AStaticMeshActor* HouseActor = GetWorld()->SpawnActor<AStaticMeshActor>(Location, Rotation, SpawnParams);
                 if (HouseActor)
                 {
                     UStaticMeshComponent* MeshComponent = HouseActor->GetStaticMeshComponent();
                     if (MeshComponent)
                     {
                         MeshComponent->SetStaticMesh(HouseMesh);
-                        UE_LOG(LogTemp, Log, TEXT("House %d spawned Succesfully"),HouseIndex);
+                        UE_LOG(LogTemp, Log, TEXT("House %d spawned successfully on %s"), HouseIndex, *Landscape->GetName());
                     }
                     else
                     {
                         UE_LOG(LogTemp, Warning, TEXT("House %d mesh component not found"), HouseIndex);
                     }
-          
                 }
                 else
                 {
@@ -114,15 +120,14 @@ void ALevel94HouseGen::PlaceHouses()
             }
         }
     }
+}
 
-
-    
-float ALevel94HouseGen::GetLandscapeHeightAtLocation(const FVector& Location, const ALandscape* Landscape) const
+bool ALevel94HouseGen::GetLandscapeHeightAndNormalAtLocation(const FVector& Location, const ALandscape* Landscape, float& OutHeight, FVector& OutNormal) const
 {
     if (!Landscape)
     {
-        UE_LOG(LogTemp, Warning, TEXT("NO LANDSCAPE AVAIL FOR HIGH CALC"));
-        return 0.0f;
+        UE_LOG(LogTemp, Warning, TEXT("No landscape available for height calculation"));
+        return false;
     }
 
     FVector StartLocation = FVector(Location.X, Location.Y, 10000.0f);
@@ -134,13 +139,26 @@ float ALevel94HouseGen::GetLandscapeHeightAtLocation(const FVector& Location, co
 
     if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params))
     {
-        UE_LOG(LogTemp, Log, TEXT("Line trace hit at Z: %f"), HitResult.Location.Z);
-        return HitResult.Location.Z;
+        OutHeight = HitResult.Location.Z;
+        OutNormal = HitResult.Normal;
+        return true;
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Line Trace did not hit landscape"));
+        UE_LOG(LogTemp, Warning, TEXT("Line trace did not hit landscape"));
     }
 
-    return 0.0f;
+    OutHeight = 0.0f;
+    OutNormal = FVector::UpVector;
+    return false;
+}
+
+float ALevel94HouseGen::GenerateRestrictedRotation(FRandomStream& RandomStream) const
+{
+    float Rotation = RandomStream.FRandRange(0.0f, 360.0f);
+    while (Rotation > 30.0f && Rotation < 330.0f)
+    {
+        Rotation = RandomStream.FRandRange(0.0f, 360.0f);
+    }
+    return Rotation;
 }
