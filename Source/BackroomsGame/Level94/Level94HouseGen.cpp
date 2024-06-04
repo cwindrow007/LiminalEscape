@@ -74,7 +74,7 @@ void ALevel94HouseGen::PlaceHouses()
         ALandscape* Landscape = Landscapes[LandscapeIndex];
         if (!Landscape) continue;
 
-        int32 HousePerRow = FMath::CeilToInt(FMath::Sqrt(static_cast<float>(NumHouses)));
+        // int32 HousePerRow = FMath::CeilToInt(FMath::Sqrt(static_cast<float>(NumHouses)));
         FVector LandscapeOrigin;
         FVector LandscapeBoundsExtent;
         Landscape->GetActorBounds(false, LandscapeOrigin, LandscapeBoundsExtent);
@@ -82,6 +82,7 @@ void ALevel94HouseGen::PlaceHouses()
         FVector LandscapeMin = LandscapeOrigin - LandscapeBoundsExtent;
         FVector LandscapeMax = LandscapeOrigin + LandscapeBoundsExtent;
 //Houses per landscape are /2 for total landscapes EX 2000 houses = 33 landscapes if there are 9
+        
         for(int32 HouseIndex = 0; HouseIndex < HousesPerLandScape; ++HouseIndex)
         {
             //Variables Defined
@@ -94,7 +95,7 @@ void ALevel94HouseGen::PlaceHouses()
             int32 MaxAttempts = 100;
             int32 Attempts = 0;
 
-            while(!bValidLocation && Attempts < MaxAttempts)
+            while (!bValidLocation && Attempts < MaxAttempts)
             {
                 Location.X = RandomStream.FRandRange(LandscapeMin.X, LandscapeMax.X);
                 Location.Y = RandomStream.FRandRange(LandscapeMin.Y, LandscapeMax.Y);
@@ -117,6 +118,7 @@ void ALevel94HouseGen::PlaceHouses()
                     FRotator Rotation = QuatRotation.Rotator();
                 
                     //Rotation.Yaw = RandomStream.FRandRange(0.0f, 360.0f);
+                
                     UE_LOG(LogTemp, Log, TEXT("House %d Location: %s on Landscape %s with Rotation: %s"), HouseIndex, *Location.ToString(), *Landscape->GetName(), *Rotation.ToString());
 
                     FActorSpawnParameters SpawnParams;
