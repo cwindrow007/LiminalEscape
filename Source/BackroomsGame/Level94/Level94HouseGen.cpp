@@ -104,7 +104,8 @@ void ALevel94HouseGen::PlaceHouses()
                 if (GetLandscapeHeightAndNormalAtLocation(Location, Landscape, Height, Normal))
                 {
                     Location.Z = Height + HeightOffSet;
-                    bValidLocation = IsLocationValid(Location, 200.0f);
+                    FVector HouseBoundsExtent = HouseMesh->GetBounds().BoxExtent;
+                    bValidLocation = IsLocationValid(Location, HouseBoundsExtent);
                 }
                 Attempts++;
             }
@@ -178,17 +179,17 @@ bool ALevel94HouseGen::GetLandscapeHeightAndNormalAtLocation(const FVector& Loca
     return false;
 }
 
-//Function for valid location
-bool ALevel94HouseGen::IsLocationValid(const FVector& Location, float Radius) const
+//Function for valid location and to not spawn ontop, not working
+bool ALevel94HouseGen::IsLocationValid(const FVector& Location, const FVector& BoundsExtent) const
 {
-    for(const FVector& ExistingLoaction : HouseLocations)
-    {
-        if(FVector::Dist(Location, ExistingLoaction) < Radius)
-        {
-            return false;
-        }
-    }
-    return true;
+    FCollisionShape CollisionShape = FCollisionShape::MakeBox(BoundsExtent);
+    TArray<FOverlapResult> Overlaps;
+    FCollisionQueryParams QueryParams;
+    QueryParams.AddIgnoredActor(this);
+
+    GetWorld()->OverlapMultiByChannel(Overlaps, Location, FQuat::Identity, ECC_WorldStatic, CollisionShape, QueryParams);
+
+    return Overlaps.Num() > 0;
 }
 
 
