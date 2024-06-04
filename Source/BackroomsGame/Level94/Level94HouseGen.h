@@ -32,6 +32,7 @@ private:
 	void PlaceHouses();
 	bool GetLandscapeHeightAndNormalAtLocation(const FVector& Location, const ALandscape* Landscape, float& OutHeight, FVector& OutNormal) const;
 	float GenerateRestrictedRotation(FRandomStream& RandomStream) const;
+	bool IsLocationValid(const FVector& Location, float Radius) const;
 
 	UPROPERTY(EditAnywhere, Category = "House")
 	UStaticMesh* HouseMesh;
@@ -49,4 +50,5 @@ private:
 	int32 RandomSeed;
 
 	TArray<ALandscape*> Landscapes;
+	TArray<FVector> HouseLocations;
 };

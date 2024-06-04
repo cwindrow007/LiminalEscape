@@ -1,8 +1,6 @@
 #include "Level94HouseGen.h"
 #include "Engine/World.h"
 #include "Landscape.h"
-#include "LandscapeComponent.h"
-#include "LandscapeHeightfieldCollisionComponent.h"
 #include "EngineUtils.h"
 #include "Engine/StaticMeshActor.h"
 #include "Components/StaticMeshComponent.h"
@@ -18,7 +16,10 @@ ALevel94HouseGen::ALevel94HouseGen()
 
     // Initialize default values
     HeightOffSet = 100.0f;
-    RandomSeed = 12345; // Set a default seed value
+    
+    // Set a default seed value
+    RandomSeed = 12345;
+   
 }
 
 // Called when the game starts or when spawned
@@ -52,7 +53,7 @@ void ALevel94HouseGen::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 }
-
+//Place houses Function
 void ALevel94HouseGen::PlaceHouses()
 {
     if (Landscapes.Num() == 0 || !HouseMesh)
@@ -61,12 +62,13 @@ void ALevel94HouseGen::PlaceHouses()
         return;
     }
     UE_LOG(LogTemp, Log, TEXT("Placing Houses"));
-
+//Random Seeding
     FRandomStream RandomStream(RandomSeed);
     
     int32 TotalLandscapes = Landscapes.Num();
     int32 HousesPerLandScape = NumHouses / TotalLandscapes;
     
+    //IF the landscape index is greater than the Landscape we take the min and  max from the landscape extent. 
     for (int32 LandscapeIndex = 0; LandscapeIndex < TotalLandscapes; ++LandscapeIndex)
     {
         ALandscape* Landscape = Landscapes[LandscapeIndex];
@@ -79,49 +81,70 @@ void ALevel94HouseGen::PlaceHouses()
 
         FVector LandscapeMin = LandscapeOrigin - LandscapeBoundsExtent;
         FVector LandscapeMax = LandscapeOrigin + LandscapeBoundsExtent;
-
+//Houses per landscape are /2 for total landscapes EX 2000 houses = 33 landscapes if there are 9
         for(int32 HouseIndex = 0; HouseIndex < HousesPerLandScape; ++HouseIndex)
         {
+            //Variables Defined
             FVector Location;
-            Location.X = RandomStream.FRandRange(LandscapeMin.X, LandscapeMax.X);
-            Location.Y = RandomStream.FRandRange(LandscapeMin.Y, LandscapeMax.Y);
-
             float Height;
             FVector Normal;
-            if (GetLandscapeHeightAndNormalAtLocation(Location, Landscape, Height, Normal))
+
+            //Attempt to find valid location to prevent mesh overlap
+            bool bValidLocation = false;
+            int32 MaxAttempts = 100;
+            int32 Attempts = 0;
+
+            while(!bValidLocation && Attempts < MaxAttempts)
             {
-                Location.Z = Height + HeightOffSet;
+                Location.X = RandomStream.FRandRange(LandscapeMin.X, LandscapeMax.X);
+                Location.Y = RandomStream.FRandRange(LandscapeMin.Y, LandscapeMax.Y);
 
-                // Generate a rotation based on the normal of the landscape
-                FRotator Rotation = FRotationMatrix::MakeFromZ(Normal).Rotator();
-                Rotation.Yaw = RandomStream.FRandRange(0.0f, 360.0f);
 
-                UE_LOG(LogTemp, Log, TEXT("House %d Location: %s on Landscape %s with Rotation: %s"), HouseIndex, *Location.ToString(), *Landscape->GetName(), *Rotation.ToString());
-
-                FActorSpawnParameters SpawnParams;
-                AStaticMeshActor* HouseActor = GetWorld()->SpawnActor<AStaticMeshActor>(Location, Rotation, SpawnParams);
-                if (HouseActor)
+                if (GetLandscapeHeightAndNormalAtLocation(Location, Landscape, Height, Normal))
                 {
-                    UStaticMeshComponent* MeshComponent = HouseActor->GetStaticMeshComponent();
-                    if (MeshComponent)
+                    Location.Z = Height + HeightOffSet;
+                    bValidLocation = IsLocationValid(Location, 200.0f);
+                }
+                Attempts++;
+            }
+
+            if(bValidLocation)
+            {
+                HouseLocations.Add(Location);
+
+                    //My TI-84+CE loved me here
+                    FQuat QuatRotation = FQuat::FindBetweenNormals(FVector::UpVector, Normal);
+                    FRotator Rotation = QuatRotation.Rotator();
+                
+                    //Rotation.Yaw = RandomStream.FRandRange(0.0f, 360.0f);
+                    UE_LOG(LogTemp, Log, TEXT("House %d Location: %s on Landscape %s with Rotation: %s"), HouseIndex, *Location.ToString(), *Landscape->GetName(), *Rotation.ToString());
+
+                    FActorSpawnParameters SpawnParams;
+                    AStaticMeshActor* HouseActor = GetWorld()->SpawnActor<AStaticMeshActor>(Location, Rotation, SpawnParams);
+                    if (HouseActor)
                     {
-                        MeshComponent->SetStaticMesh(HouseMesh);
-                        UE_LOG(LogTemp, Log, TEXT("House %d spawned successfully on %s"), HouseIndex, *Landscape->GetName());
+                        UStaticMeshComponent* MeshComponent = HouseActor->GetStaticMeshComponent();
+                        if (MeshComponent)
+                        {
+                            MeshComponent->SetStaticMesh(HouseMesh);
+                            UE_LOG(LogTemp, Log, TEXT("House %d spawned successfully on %s"), HouseIndex, *Landscape->GetName());
+                        }
+                        else
+                        {
+                            UE_LOG(LogTemp, Warning, TEXT("House %d mesh component not found"), HouseIndex);
+                        }
                     }
                     else
                     {
-                        UE_LOG(LogTemp, Warning, TEXT("House %d mesh component not found"), HouseIndex);
+                        UE_LOG(LogTemp, Warning, TEXT("House %d not spawned"), HouseIndex);
                     }
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Warning, TEXT("House %d not spawned"), HouseIndex);
                 }
             }
         }
     }
-}
 
+
+//Traces the landscape on the axis to determine the house normals (Whatever that is i really just don't understand)
 bool ALevel94HouseGen::GetLandscapeHeightAndNormalAtLocation(const FVector& Location, const ALandscape* Landscape, float& OutHeight, FVector& OutNormal) const
 {
     if (!Landscape)
@@ -153,6 +176,21 @@ bool ALevel94HouseGen::GetLandscapeHeightAndNormalAtLocation(const FVector& Loca
     return false;
 }
 
+//Function for valid location
+bool ALevel94HouseGen::IsLocationValid(const FVector& Location, float Radius) const
+{
+    for(const FVector& ExistingLoaction : HouseLocations)
+    {
+        if(FVector::Dist(Location, ExistingLoaction) < Radius)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+//Very Useful Function :-)
 float ALevel94HouseGen::GenerateRestrictedRotation(FRandomStream& RandomStream) const
 {
     float Rotation = RandomStream.FRandRange(0.0f, 360.0f);
