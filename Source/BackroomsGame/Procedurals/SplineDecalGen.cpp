@@ -17,6 +17,11 @@ ASplineDecalGen::ASplineDecalGen()
 
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 	RootComponent = SplineComponent;
+
+	DecalLength = 100.0f;
+	GapBetweenDecals = 10.0f;
+	NumberOfRows = 1;
+	DecalSize = FVector(100.0f, 100.0f, 1.0f);
 }
 
 // Called when the game starts or when spawned
@@ -24,7 +29,27 @@ void ASplineDecalGen::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if(!Landscape)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Landscape reference is not set!!"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Landscape reference is valid"));
+	}
+
+	if(!SplineComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("spline component is not set!"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("SplineComponent  refence is valid"));
+	}
+	
+
 	AdjustSplineToLandscape();
+	GenerateDecals();
 }
 
 // Called every frame
@@ -54,6 +79,7 @@ void ASplineDecalGen::GenerateDecals()
 
 			// Offset location for additional rows
 			FVector RowLocation = Location + Rotation.RotateVector(FVector(RowOffset, 0.0f, 0.0f));
+			
 
 			FActorSpawnParameters SpawnParams;
 			ADecalActor* Decal = GetWorld()->SpawnActor<ADecalActor>(RowLocation, Rotation, SpawnParams);
@@ -65,7 +91,7 @@ void ASplineDecalGen::GenerateDecals()
 				// Access the Decal component and set its size
 				if (UDecalComponent* DecalComponent = Decal->GetDecal())
 				{
-					DecalComponent->DecalSize = FVector(DecalLength, DecalLength, 1.0f);
+					DecalComponent->DecalSize = DecalSize;
 				}
 			}
 
@@ -103,6 +129,7 @@ void ASplineDecalGen::AdjustSplineToLandscape()
 			{
 				FVector NewLocation = HitResult.Location;
 				SplineComponent->SetLocationAtSplinePoint(i, NewLocation, ESplineCoordinateSpace::World, true);
+				UE_LOG(LogTemp, Log, TEXT("Adjusted Spline Point %d to location; %s"), i, *NewLocation.ToString());
 			}
 		}
 	}

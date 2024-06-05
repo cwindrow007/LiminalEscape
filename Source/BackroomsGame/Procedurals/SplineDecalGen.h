@@ -23,10 +23,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	//Spline Component Reference
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USplineComponent* SplineComponent;
+	
 
 	//Decal Material Reference
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decals")
@@ -44,15 +41,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Decals")
 	int32 NumberOfRows;
 
-	//Landscape reference for floor
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Landscape")
-	ALandscape* Landscape;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Decal")
+	FVector DecalSize;
 
-	//Function to generate decals along the Spline
-	UFUNCTION(BlueprintCallable, Category = "Generation")
-	void GenerateDecals();
+
+
+	
+
+
 
 private:
 	//Function to adjust spline points based on landscape
 	void AdjustSplineToLandscape();
+	void GenerateDecals();
+
+	//Spline Component Reference
+	UPROPERTY(VisibleAnywhere)
+	USplineComponent* SplineComponent;
+
+	//Landscape reference for floor
+	UPROPERTY(EditAnywhere, Category = "Landscape")
+	ALandscape* Landscape;
 };
