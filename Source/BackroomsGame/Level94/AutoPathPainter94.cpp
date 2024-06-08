@@ -2,6 +2,10 @@
 
 
 #include "AutoPathPainter94.h"
+#include "Landscape.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Components/DecalComponent.h"
+#include " Engine/World.h"
 
 // Sets default values
 AAutoPathPainter94::AAutoPathPainter94()
@@ -24,4 +28,14 @@ void AAutoPathPainter94::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void APathPainter::RandomPaths(ALandscape* Landscape, UMaterialInterface* PathMaterial, int32 numPaths)
+{
+	if(!Landscape|| !Pathmaterial)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Landscape or path material available for path painting));
+			return;
+	}
+}
+
 
