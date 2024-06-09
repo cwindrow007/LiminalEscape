@@ -1,6 +1,4 @@
 #include "AutoPathPainter94.h"
-
-#include "AutoPathPainter94.h"
 #include "Landscape.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/DecalComponent.h"
@@ -37,10 +35,12 @@ void AAutoPathPainter94::PaintRandomPaths(ALandscape* Landscape, int32 numPaths)
 
     FRandomStream RandomStream(FDateTime::Now().GetTicks());
 
-    for (int32 i = 0; i < numPaths  ; ++i)
+    for (int32 i = 0; i < numPaths; ++i)
     {
         FVector Start = GetRandomPointOnLandscape(Landscape, RandomStream);
         FVector End = GetRandomPointOnLandscape(Landscape, RandomStream);
+
+        UE_LOG(LogTemp, Log, TEXT("Path %d: Start - %s, End - %s"), i, *Start.ToString(), *End.ToString());
         PaintPathBewteenTwoPoints(Start, End, Landscape);
     }
 }
@@ -88,13 +88,16 @@ FVector AAutoPathPainter94::GetRandomPointOnLandscape(ALandscape* Landscape, FRa
     FCollisionQueryParams Params;
     Params.AddIgnoredActor(this);
 
-    if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params))
+    bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
+    if (bHit && HitResult.GetActor()== Landscape)
     {
         RandomPoint.Z = HitResult.Location.Z;
+        UE_LOG(LogTemp, Log, TEXT("Random point on landscape found at %s"), *RandomPoint.ToString());
     }
     else
     {
         RandomPoint.Z = LandscapeOrigin.Z; // Default to landscape origin height if trace fails
+        UE_LOG(LogTemp, Warning, TEXT("Failed to find random point on landscape, using default Z %f"), LandscapeOrigin.Z);
     }
 
     return RandomPoint;
