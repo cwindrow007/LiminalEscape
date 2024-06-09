@@ -34,15 +34,15 @@ void ALevel94HouseGen::BeginPlay()
     }
     if (Landscapes.Num() > 0)
     {
-        UE_LOG(LogTemp, Log, TEXT("Found %d Landscapes"), Landscapes.Num());
+       //UE_LOG(LogTemp, Log, TEXT("Found %d Landscapes"), Landscapes.Num());
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("No Landscape Found in this level"));
+       // UE_LOG(LogTemp, Warning, TEXT("No Landscape Found in this level"));
     }
     if (!HouseMesh)
     {
-        UE_LOG(LogTemp, Warning, TEXT("No House Mesh Assigned"));
+        //UE_LOG(LogTemp, Warning, TEXT("No House Mesh Assigned"));
     }
 
     PlaceHouses();
@@ -58,10 +58,10 @@ void ALevel94HouseGen::PlaceHouses()
 {
     if (Landscapes.Num() == 0 || !HouseMesh)
     {
-        UE_LOG(LogTemp, Warning, TEXT("No landscape or house mesh found"));
+        //UE_LOG(LogTemp, Warning, TEXT("No landscape or house mesh found"));
         return;
     }
-    UE_LOG(LogTemp, Log, TEXT("Placing Houses"));
+    //UE_LOG(LogTemp, Log, TEXT("Placing Houses"));
 //Random Seeding
     FRandomStream RandomStream(RandomSeed);
     
@@ -120,7 +120,7 @@ void ALevel94HouseGen::PlaceHouses()
                 
                     //Rotation.Yaw = RandomStream.FRandRange(0.0f, 360.0f);
                 
-                    UE_LOG(LogTemp, Log, TEXT("House %d Location: %s on Landscape %s with Rotation: %s"), HouseIndex, *Location.ToString(), *Landscape->GetName(), *Rotation.ToString());
+                    //UE_LOG(LogTemp, Log, TEXT("House %d Location: %s on Landscape %s with Rotation: %s"), HouseIndex, *Location.ToString(), *Landscape->GetName(), *Rotation.ToString());
 
                     FActorSpawnParameters SpawnParams;
                     AStaticMeshActor* HouseActor = GetWorld()->SpawnActor<AStaticMeshActor>(Location, Rotation, SpawnParams);
@@ -130,16 +130,16 @@ void ALevel94HouseGen::PlaceHouses()
                         if (MeshComponent)
                         {
                             MeshComponent->SetStaticMesh(HouseMesh);
-                            UE_LOG(LogTemp, Log, TEXT("House %d spawned successfully on %s"), HouseIndex, *Landscape->GetName());
+                            //UE_LOG(LogTemp, Log, TEXT("House %d spawned successfully on %s"), HouseIndex, *Landscape->GetName());
                         }
                         else
                         {
-                            UE_LOG(LogTemp, Warning, TEXT("House %d mesh component not found"), HouseIndex);
+                            //UE_LOG(LogTemp, Warning, TEXT("House %d mesh component not found"), HouseIndex);
                         }
                     }
                     else
                     {
-                        UE_LOG(LogTemp, Warning, TEXT("House %d not spawned"), HouseIndex);
+                        //UE_LOG(LogTemp, Warning, TEXT("House %d not spawned"), HouseIndex);
                     }
                 }
             }
@@ -152,7 +152,7 @@ bool ALevel94HouseGen::GetLandscapeHeightAndNormalAtLocation(const FVector& Loca
 {
     if (!Landscape)
     {
-        UE_LOG(LogTemp, Warning, TEXT("No landscape available for height calculation"));
+        //UE_LOG(LogTemp, Warning, TEXT("No landscape available for height calculation"));
         return false;
     }
 
@@ -171,7 +171,7 @@ bool ALevel94HouseGen::GetLandscapeHeightAndNormalAtLocation(const FVector& Loca
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Line trace did not hit landscape"));
+        //UE_LOG(LogTemp, Warning, TEXT("Line trace did not hit landscape"));
     }
 
     OutHeight = 0.0f;

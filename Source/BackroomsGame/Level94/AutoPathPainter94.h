@@ -24,13 +24,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//Function to Paint Paths
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PathPainting")
+	UMaterialInterface* DirtMaterial;
 
-	void PaintRandomPaths(ALandscape* Landscape, UMaterialInterface* DirtMaterial, int32 numPaths);
+	//Function to Paint Paths
+	UFUNCTION(BlueprintCallable, Category = "PathPainting")
+	void PaintRandomPaths(ALandscape* Landscape, int32 numPaths);
 
 private:
 
-	void PaintPathBewteenTwoPoints(const FVector& Start, const FVector& End, ALandscape* Landscape, UMaterialInterface* DirtMaterial);
+	void PaintPathBewteenTwoPoints(const FVector& Start, const FVector& End, ALandscape* Landscape);
 
 	FVector GetRandomPointOnLandscape(ALandscape* Landscape, FRandomStream& RandomStream);
 };
