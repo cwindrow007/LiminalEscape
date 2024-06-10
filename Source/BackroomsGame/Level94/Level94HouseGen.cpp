@@ -118,7 +118,7 @@ void ALevel94HouseGen::PlaceHouses()
                     FQuat QuatRotation = FQuat::FindBetweenNormals(FVector::UpVector, Normal);
                     FRotator Rotation = QuatRotation.Rotator();
                 
-                    //Rotation.Yaw = RandomStream.FRandRange(0.0f, 360.0f);
+                    Rotation.Yaw = RandomStream.FRandRange(0.0f, 360.0f);
                 
                     //UE_LOG(LogTemp, Log, TEXT("House %d Location: %s on Landscape %s with Rotation: %s"), HouseIndex, *Location.ToString(), *Landscape->GetName(), *Rotation.ToString());
 

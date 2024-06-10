@@ -35,13 +35,34 @@ void AAutoPathPainter94::PaintRandomPaths(ALandscape* Landscape, int32 numPaths)
 
     FRandomStream RandomStream(FDateTime::Now().GetTicks());
 
+    FVector LandscapeOrigin;
+    FVector LandscapeBoundsExtent;
+    Landscape->GetActorBounds(false, LandscapeOrigin, LandscapeBoundsExtent);
+
+    FVector LandscapeMin = LandscapeOrigin - LandscapeBoundsExtent;
+    FVector LandscapeMax = LandscapeOrigin + LandscapeBoundsExtent;
+
+    TArray<FVector> Points;
     for (int32 i = 0; i < numPaths; ++i)
     {
-        FVector Start = GetRandomPointOnLandscape(Landscape, RandomStream);
-        FVector End = GetRandomPointOnLandscape(Landscape, RandomStream);
+        Points.Add(GetRandomPointOnLandscape(Landscape, RandomStream));
+    }
 
-        UE_LOG(LogTemp, Log, TEXT("Path %d: Start - %s, End - %s"), i, *Start.ToString(), *End.ToString());
-        PaintPathBewteenTwoPoints(Start, End, Landscape);
+    for (int32 i = 0; i < Points.Num(); ++i)
+    {
+        for (int32 j = i + 1; j < Points.Num(); ++j)
+        {
+            PaintPathBewteenTwoPoints(Points[i], Points[j], Landscape);
+        }
+
+        FVector CurrentPoint = Points[i];
+        while(!IsPointOnLandscapeEdge(CurrentPoint, LandscapeMin, LandscapeMax))
+        {
+            FVector NextPoint = GetRandomPointOnLandscape(Landscape, RandomStream);
+            PaintPathBewteenTwoPoints(CurrentPoint, NextPoint, Landscape);
+            CurrentPoint = NextPoint;
+        }
+        
     }
 }
 
@@ -101,4 +122,9 @@ FVector AAutoPathPainter94::GetRandomPointOnLandscape(ALandscape* Landscape, FRa
     }
 
     return RandomPoint;
+}
+
+bool AAutoPathPainter94::IsPointOnLandscapeEdge(const FVector& Point, const FVector& LandscapeMin, const FVector& LandscapeMax)
+{
+    return Point.X <= LandscapeMin.X || Point.X >= LandscapeMax.X || Point.Y <= LandscapeMin.Y || Point.Y >+ LandscapeMax.Y;
 }

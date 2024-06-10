@@ -36,4 +36,6 @@ private:
 	void PaintPathBewteenTwoPoints(const FVector& Start, const FVector& End, ALandscape* Landscape);
 
 	FVector GetRandomPointOnLandscape(ALandscape* Landscape, FRandomStream& RandomStream);
+
+	bool IsPointOnLandscapeEdge(const FVector& Point, const FVector& LandscapeMin, const FVector& LandscapeMax);
 };
