@@ -2,11 +2,7 @@
 
 
 #include "Level0Monster.h"
-
-#include "FunctionalAITest.h"
-#include "FunctionalAITest.h"
 #include "TimerManager.h"
-#include "Kismet/GameplayStatics.h"
 #include "AIController.h"
 
 
