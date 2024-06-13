@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PawnSensingComponent.h"
 #include "GameFramework/Character.h"
 #include "Level0Monster.generated.h"
 
@@ -23,7 +24,26 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Creatire")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	UPawnSensingComponent* PawnSensingComponent;
+
+	UFUNCTION()
+	void OnSeePawn(APawn* Pawn);
+
+	void StartRoaming();
+	void ChasePlayer(APawn* PLayer);
+	void CheckPlayerVisibility();
+	void Despawn();
+	void Respawn();
+
+private:
+	FTimerHandle RoamingTimerHandle;
+	FTimerHandle VisibilityCheckTimerHandle;
+	FTimerHandle DespawnTimerHandle;
+	FTimerHandle RespawnTimerHandle;
+
+	APawn* PlayerPawn;
+	bool bPlayerDetected;
+	
 
 };
