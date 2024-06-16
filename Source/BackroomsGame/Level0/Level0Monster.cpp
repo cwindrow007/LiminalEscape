@@ -50,7 +50,6 @@ void ALevel0Monster::StartRoaming()
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if(AIController)
 	{
-		//Mass Error Here needing Full
 		AIController->MoveToLocation(RandomLocation);
 	}
 
