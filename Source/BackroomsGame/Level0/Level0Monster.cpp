@@ -2,9 +2,18 @@
 
 
 #include "Level0Monster.h"
-#include "TimerManager.h"
-#include "AIController.h"
 
+#include "AIController.h"
+#include "AIController.h"
+#include "TimerManager.h"
+#include "Perception/PawnSensingComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "NavigationSystem.h"
+#include "GameFramework/PlayerController.h"
+#include "NavigationPath.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 
 // Sets default values
 ALevel0Monster::ALevel0Monster()
@@ -31,7 +40,25 @@ void ALevel0Monster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(bPlayerDetected && PlayerPawn)
+	{
+		AAIController* AIContoller = Cast<AAIController>(GetController());
+		if(AIContoller)
+		{
+			AIContoller->MoveToActor(PlayerPawn);
+		}
+	}
+	else
+	{
+		AAIController* AIController = Cast<AAIController>(GetController());
+		if (AIController && AIController->GetMoveStatus() == EPathFollowingStatus::Idle)
+		{
+			StartRoaming();
+		}
+	}
 }
+
+
 //When PLayer is Seen Call Chase
 void ALevel0Monster::OnSeePawn(APawn* Pawn)
 {
@@ -40,7 +67,8 @@ void ALevel0Monster::OnSeePawn(APawn* Pawn)
 	{
 		PlayerPawn = Pawn;
 		bPlayerDetected = true;
-		ChasePlayer(Pawn);
+		GetWorldTimerManager().ClearTimer(VisibilityCheckTimerHandle);
+		GetWorldTimerManager().SetTimer(VisibilityCheckTimerHandle, this, &ALevel0Monster::CheckPlayerVisibility, 1.0f, true);
 	}
 }
 //Triggers Roaming off of Begin play
@@ -54,19 +82,6 @@ void ALevel0Monster::StartRoaming()
 	}
 
 	GetWorldTimerManager().SetTimer(RoamingTimerHandle, this, &ALevel0Monster::StartRoaming, 5.0f, false);
-}
-
-//Player Lock and Chase
-
-void ALevel0Monster::ChasePlayer(APawn* Player)
-{
-	AAIController* AIController = Cast<AAIController>(GetController());
-	if(AIController && Player)
-	{
-		AIController -> MoveToActor(Player);
-	}
-	GetWorldTimerManager().SetTimer(VisibilityCheckTimerHandle, this, &ALevel0Monster::CheckPlayerVisibility, 1.0f, true);
-	
 }
 
 void ALevel0Monster::CheckPlayerVisibility()
@@ -88,7 +103,15 @@ void ALevel0Monster::Despawn()
 void ALevel0Monster::Respawn()
 {
 	FVector PlayerLocation = PlayerPawn->GetActorLocation();
-	FVector RandomLocation = PlayerLocation + FMath::VRand() * 2000.0f;
+	FVector RandomLocation;
+	if(UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld()))
+	{
+		FNavLocation NavLocation;
+		if(NavSys->GetRandomPointInNavigableRadius(PlayerLocation, 2000.0f, NavLocation))
+		{
+			RandomLocation = NavLocation.Location;
+		}
+	}
 
 	SetActorLocation(RandomLocation);
 	SetActorHiddenInGame(false);
@@ -97,6 +120,31 @@ void ALevel0Monster::Respawn()
 	bPlayerDetected = false;
 	StartRoaming();
 }
+
+void ALevel0Monster::TeleportToRandomLocation()
+{
+	FVector RandomLocation;
+	if(UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld()))
+	{
+		FNavLocation NavLocation;
+		if(NavSys->GetRandomPointInNavigableRadius(GetActorLocation(), 2000.0f, NavLocation))
+		{
+			RandomLocation = NavLocation.Location;
+		}
+	}
+	SetActorLocation(RandomLocation);
+	UE_LOG(LogTemp, Warning, TEXT("Teleported to %s:"), *RandomLocation.ToString());
+}
+void ALevel0Monster::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
+
+	if(Other && Other == PlayerPawn)
+	{
+		TeleportToRandomLocation();
+	}
+}
+
 
 
 

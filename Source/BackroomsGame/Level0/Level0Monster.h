@@ -33,10 +33,10 @@ public:
 	void OnSeePawn(APawn* Pawn);
 
 	void StartRoaming();
-	void ChasePlayer(APawn* PLayer);
 	void CheckPlayerVisibility();
 	void Despawn();
 	void Respawn();
+	void TeleportToRandomLocation();
 
 private:
 	FTimerHandle RoamingTimerHandle;
@@ -46,6 +46,9 @@ private:
 
 	APawn* PlayerPawn;
 	bool bPlayerDetected;
+
+protected:
+	virtual  void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 	
 
 };
