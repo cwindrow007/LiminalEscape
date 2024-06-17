@@ -14,6 +14,7 @@
 #include "GameFramework/PlayerController.h"
 #include "NavigationPath.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Navigation/PathFollowingComponent.h"
 
 // Sets default values
 ALevel0Monster::ALevel0Monster()
@@ -51,7 +52,7 @@ void ALevel0Monster::Tick(float DeltaTime)
 	else
 	{
 		AAIController* AIController = Cast<AAIController>(GetController());
-		if (AIController && AIController->GetMoveStatus() == EPathFollowingStatus::Idle)
+		if (AIController && AIController->GetPathFollowingComponent()->GetStatus() == EPathFollowingStatus::Idle)
 		{
 			StartRoaming();
 		}
