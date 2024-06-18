@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProceduralMeshComponent.h"
 #include "GameFramework/Actor.h"
 #include "AutoPlaneMeshCutTool.generated.h"
 
@@ -27,6 +28,13 @@ public:
 	void PerformMeshCut();
 
 private:
+
+	UPROPERTY(VisibleAnywhere)
+	UProceduralMeshComponent* ProceduralMesh;
+	
 	void CutMesh();
+
+	void GetMeshData(TArray<FVector>& Vertices, TArray<int32>& Triangles);
+	void CreateMeshSection(TArray<FVector>& Vertices, TArray<int32>& Triangles);
 
 };
