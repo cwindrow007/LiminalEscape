@@ -37,4 +37,6 @@ private:
 	void GetMeshData(TArray<FVector>& Vertices, TArray<int32>& Triangles);
 	void CreateMeshSection(TArray<FVector>& Vertices, TArray<int32>& Triangles);
 
+	FVector GetPlaneLineIntersection(const FPlane& Plane, const FVector& LineStart, const FVector& LineEnd);
+
 };
