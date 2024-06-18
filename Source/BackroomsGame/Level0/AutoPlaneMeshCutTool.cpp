@@ -45,9 +45,18 @@ void AAutoPlaneMeshCutTool::GetMeshData(TArray<FVector>& Vertices, TArray<int32>
         {
             Vertices.Add(Vertex.Position);
         }
-        Triangles = MeshSection->ProcIndexBuffer;
+        
+        Triangles.Append(MeshSection->ProcIndexBuffer);
     }
 }
+
+FVector AAutoPlaneMeshCutTool::GetPlaneLineIntersection(const FPlane& Plane, const FVector& LineStart, const FVector& LineEnd)
+{
+    FVector LineDir = LineEnd - LineStart;
+    float T = (-Plane.W - FVector::DotProduct(Plane.GetNormal(), LineStart))/ FVector::DotProduct(Plane.GetNormal(), LineDir);
+    return LineStart + T * LineDir;
+}
+
 
 void AAutoPlaneMeshCutTool::CutMesh()
 {
@@ -65,7 +74,11 @@ void AAutoPlaneMeshCutTool::CutMesh()
         FVector V1 = Vertices[Triangles[i + 1]];
         FVector V2 = Vertices[Triangles[i + 2]];
 
-        if (CuttingPlane.PlaneDot(V0) >= 0 && CuttingPlane.PlaneDot(V1) >= 0 && CuttingPlane.PlaneDot(V2) >= 0)
+        float D0 = CuttingPlane.PlaneDot(V0);
+        float D1 = CuttingPlane.PlaneDot(V1);
+        float D2 = CuttingPlane.PlaneDot(V2);
+
+        if (D0 >= 0 && D1 >= 0 && D2 >= 0)
         {
             int32 Index0 = NewVertices1.Add(V0);
             int32 Index1 = NewVertices1.Add(V1);
@@ -74,7 +87,7 @@ void AAutoPlaneMeshCutTool::CutMesh()
             NewTriangles1.Add(Index1);
             NewTriangles1.Add(Index2);
         }
-        else if (CuttingPlane.PlaneDot(V0) <= 0 && CuttingPlane.PlaneDot(V1) <= 0 && CuttingPlane.PlaneDot(V2) <= 0)
+        else if (D0 <= 0 && D1 <= 0 && D2 <= 0)
         {
             int32 Index0 = NewVertices2.Add(V0);
             int32 Index1 = NewVertices2.Add(V1);
@@ -85,8 +98,38 @@ void AAutoPlaneMeshCutTool::CutMesh()
         }
         else
         {
-            // Handle cases where the triangle is intersected by the plane (not implemented in this simplified example)
-            // You will need to create new vertices at the intersection points and create new triangles accordingly.
+            FVector AboveVert1, AboveVert2, BelowVert;
+            if(D0 >= 0) {AboveVert1 = V0; if (D1>= 0) {AboveVert2 = V2; BelowVert = V2; }else{ AboveVert2 = V2; BelowVert = V1;}}
+            else{AboveVert1 = V1; AboveVert2 = V2; BelowVert = V0;}
+
+            //Calc Intersection Points
+
+            FVector Intersect1 = GetPlaneLineIntersection(CuttingPlane, BelowVert, AboveVert1);
+            FVector Intersect2 = GetPlaneLineIntersection(CuttingPlane, BelowVert, AboveVert2);
+
+            int32 IndexAbove1 = NewVertices1.Add(AboveVert1);
+            int32 IndexAbove2 = NewVertices1.Add(AboveVert2);
+            int32 IndexIntersect1 = NewVertices1.Add(Intersect1);
+            int32 IndexIntersect2= NewVertices1.Add(Intersect2);
+
+            NewTriangles1.Add(IndexAbove1);
+            NewTriangles1.Add(IndexIntersect1);
+            NewTriangles1.Add(IndexIntersect2);
+
+            NewTriangles1.Add(IndexAbove1);
+            NewTriangles1.Add(IndexIntersect2);
+            NewTriangles1.Add(IndexAbove2);
+
+            //Add Vertices and triangels to the below plane sections
+
+            int32 IndexBelow = NewVertices2.Add(BelowVert);
+            int32 IndexIntersect1Below = NewVertices2.Add(Intersect1);
+            int32 IndexIntersect2Below = NewVertices2.Add(Intersect2);
+
+            NewTriangles2.Add(IndexBelow);
+            NewTriangles2.Add(IndexIntersect1Below);
+            NewTriangles2.Add(IndexIntersect2Below);
+            
         }
     }
 
