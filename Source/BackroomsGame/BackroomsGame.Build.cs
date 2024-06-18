@@ -8,7 +8,7 @@ public class BackroomsGame : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Landscape", "PhysicsCore", "AIModule", "NavigationSystem"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Landscape", "PhysicsCore", "AIModule", "NavigationSystem", "ProceduralMeshComponent"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
