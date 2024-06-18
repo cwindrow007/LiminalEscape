@@ -27,16 +27,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Mesh")
 	void PerformMeshCut();
 
-private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	AActor* LightFixture;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	UStaticMeshComponent* CeilingMesh;
 
 	UPROPERTY(VisibleAnywhere)
-	UProceduralMeshComponent* ProceduralMesh;
+	UProceduralMeshComponent* CeilingProceduralMesh;
+
+private:
 	
-	void CutMesh();
+	
 
 	void GetMeshData(TArray<FVector>& Vertices, TArray<int32>& Triangles);
 	void CreateMeshSection(TArray<FVector>& Vertices, TArray<int32>& Triangles);
 
-	FVector GetPlaneLineIntersection(const FPlane& Plane, const FVector& LineStart, const FVector& LineEnd);
+	void CutCeilingForLightFixture();
 
 };

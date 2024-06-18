@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "AutoPlaneMeshCutTool.h"
-
 #include "NavigationSystemTypes.h"
 #include "ProceduralMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -13,10 +12,10 @@ AAutoPlaneMeshCutTool::AAutoPlaneMeshCutTool()
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
-    ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProceduralMesh"));
-    RootComponent = ProceduralMesh;
+    CeilingProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("CeilingProdecuralMesh"));
+    CeilingProceduralMesh->SetupAttachment(RootComponent);
+    CeilingProceduralMesh->SetVisibility(false);
 }
-
 // Called when the game starts or when spawned
 void AAutoPlaneMeshCutTool::BeginPlay()
 {
@@ -31,115 +30,90 @@ void AAutoPlaneMeshCutTool::Tick(float DeltaTime)
 
 void AAutoPlaneMeshCutTool::PerformMeshCut()
 {
-    CutMesh();
+    if(LightFixture && CeilingMesh)
+    {
+        CutCeilingForLightFixture();
+    }
 }
 
 void AAutoPlaneMeshCutTool::GetMeshData(TArray<FVector>& Vertices, TArray<int32>& Triangles)
 {
-    // Get the first procedural mesh section
-    FProcMeshSection* MeshSection = ProceduralMesh->GetProcMeshSection(0);
-    if (MeshSection)
+    if(CeilingMesh->GetStaticMesh())
     {
-        // Copy vertices and triangles
-        for (const FProcMeshVertex& Vertex : MeshSection->ProcVertexBuffer)
+        const FStaticMeshLODResources& LODResources = CeilingMesh->GetStaticMesh()->GetLODForExport(0);
+        const FPositionVertexBuffer& VertexBuffer = LODResources.VertexBuffers.PositionVertexBuffer;
+        const FRawStaticIndexBuffer& IndexBuffer = LODResources.IndexBuffer;
+
+        for(uint32 i = 0; i < VertexBuffer.GetNumVertices(); i++)
         {
-            Vertices.Add(Vertex.Position);
+            Vertices.Add(FVector(VertexBuffer.VertexPosition(i)));
         }
-        
-        Triangles.Append(MeshSection->ProcIndexBuffer);
+
+        for (int32 i = 0; i < IndexBuffer.GetNumIndices(); i++)
+        {
+            Triangles.Add(IndexBuffer.GetIndex(i));
+        }
     }
 }
 
-FVector AAutoPlaneMeshCutTool::GetPlaneLineIntersection(const FPlane& Plane, const FVector& LineStart, const FVector& LineEnd)
+void AAutoPlaneMeshCutTool::CutCeilingForLightFixture()
 {
-    FVector LineDir = LineEnd - LineStart;
-    float T = (-Plane.W - FVector::DotProduct(Plane.GetNormal(), LineStart))/ FVector::DotProduct(Plane.GetNormal(), LineDir);
-    return LineStart + T * LineDir;
-}
+    FVector Origin, BoxExtent;
+    LightFixture->GetActorBounds(false, Origin, BoxExtent);
 
-
-void AAutoPlaneMeshCutTool::CutMesh()
-{
+    //Get Ceiling Data
     TArray<FVector> Vertices;
     TArray<int32> Triangles;
     GetMeshData(Vertices, Triangles);
 
-    FPlane CuttingPlane(FVector(0, 0, 1), 0);
+    TArray<FVector> NewVertices;
+    TArray<int32> NewTriangles;
 
-    TArray<FVector> NewVertices1, NewVertices2;
-    TArray<int32> NewTriangles1, NewTriangles2;
-    for (int32 i = 0; i < Triangles.Num(); i += 3)
+    for(int32 i = 0; i < Triangles.Num(); i+= 3)
     {
         FVector V0 = Vertices[Triangles[i]];
         FVector V1 = Vertices[Triangles[i + 1]];
         FVector V2 = Vertices[Triangles[i + 2]];
 
-        float D0 = CuttingPlane.PlaneDot(V0);
-        float D1 = CuttingPlane.PlaneDot(V1);
-        float D2 = CuttingPlane.PlaneDot(V2);
-
-        if (D0 >= 0 && D1 >= 0 && D2 >= 0)
+        bool Inside = true;
+        for (const FVector& Vertex : {V0, V1, V2})
         {
-            int32 Index0 = NewVertices1.Add(V0);
-            int32 Index1 = NewVertices1.Add(V1);
-            int32 Index2 = NewVertices1.Add(V2);
-            NewTriangles1.Add(Index0);
-            NewTriangles1.Add(Index1);
-            NewTriangles1.Add(Index2);
+            if(Vertex.X < Origin.X - BoxExtent.X || Vertex.X > Origin.X + BoxExtent.X||
+               Vertex.Y < Origin.Y - BoxExtent.Y || Vertex.Y > Origin.Y + BoxExtent.Y||
+               Vertex.Z < Origin.Z - BoxExtent.Z || Vertex.Z > Origin.Z + BoxExtent.Z)
+            {
+                Inside = false;
+                break;
+            }
         }
-        else if (D0 <= 0 && D1 <= 0 && D2 <= 0)
+        if(Inside)
         {
-            int32 Index0 = NewVertices2.Add(V0);
-            int32 Index1 = NewVertices2.Add(V1);
-            int32 Index2 = NewVertices2.Add(V2);
-            NewTriangles2.Add(Index0);
-            NewTriangles2.Add(Index1);
-            NewTriangles2.Add(Index2);
+            int32 Index0 = NewVertices.Add(V0);
+            int32 Index1 = NewVertices.Add(V1);
+            int32 Index2 = NewVertices.Add(V2);
+            NewTriangles.Add(Index0);
+            NewTriangles.Add(Index1);
+            NewTriangles.Add(Index2);
         }
-        else
-        {
-            FVector AboveVert1, AboveVert2, BelowVert;
-            if(D0 >= 0) {AboveVert1 = V0; if (D1>= 0) {AboveVert2 = V2; BelowVert = V2; }else{ AboveVert2 = V2; BelowVert = V1;}}
-            else{AboveVert1 = V1; AboveVert2 = V2; BelowVert = V0;}
-
-            //Calc Intersection Points
-
-            FVector Intersect1 = GetPlaneLineIntersection(CuttingPlane, BelowVert, AboveVert1);
-            FVector Intersect2 = GetPlaneLineIntersection(CuttingPlane, BelowVert, AboveVert2);
-
-            int32 IndexAbove1 = NewVertices1.Add(AboveVert1);
-            int32 IndexAbove2 = NewVertices1.Add(AboveVert2);
-            int32 IndexIntersect1 = NewVertices1.Add(Intersect1);
-            int32 IndexIntersect2= NewVertices1.Add(Intersect2);
-
-            NewTriangles1.Add(IndexAbove1);
-            NewTriangles1.Add(IndexIntersect1);
-            NewTriangles1.Add(IndexIntersect2);
-
-            NewTriangles1.Add(IndexAbove1);
-            NewTriangles1.Add(IndexIntersect2);
-            NewTriangles1.Add(IndexAbove2);
-
-            //Add Vertices and triangels to the below plane sections
-
-            int32 IndexBelow = NewVertices2.Add(BelowVert);
-            int32 IndexIntersect1Below = NewVertices2.Add(Intersect1);
-            int32 IndexIntersect2Below = NewVertices2.Add(Intersect2);
-
-            NewTriangles2.Add(IndexBelow);
-            NewTriangles2.Add(IndexIntersect1Below);
-            NewTriangles2.Add(IndexIntersect2Below);
-            
-        }
+        
     }
-
-    CreateMeshSection(NewVertices1, NewTriangles1);
-    CreateMeshSection(NewVertices2, NewTriangles2);
+    CreateMeshSection(NewVertices, NewTriangles);
 }
 
 void AAutoPlaneMeshCutTool::CreateMeshSection(TArray<FVector>& Vertices, TArray<int32>& Triangles)
 {
-    ProceduralMesh->ClearMeshSection(0);
+ 
+    CeilingProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), TArray<FVector2d>(), TArray<FColor>(), TArray<FProcMeshTangent>(), true);
 
-    ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), TArray<FVector2D>(), TArray<FColor>(), TArray<FProcMeshTangent>(), true);
+
+    //Replace the Static Mesh with Procedural Mesh
+    CeilingMesh->SetVisibility(false);
+
+    CeilingProceduralMesh->SetVisibility(false);
 }
+
+
+
+
+
+
