@@ -4,7 +4,6 @@
 #include "Level0Monster.h"
 
 #include "AIController.h"
-#include "AIController.h"
 #include "TimerManager.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -23,6 +22,8 @@ ALevel0Monster::ALevel0Monster()
 	PrimaryActorTick.bCanEverTick = true;
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"));
 	PawnSensingComponent->OnSeePawn.AddDynamic(this, &ALevel0Monster::OnSeePawn);
+
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ALevel0Monster::OnSeePawn);
 
 	bPlayerDetected = false;
 
@@ -145,6 +146,15 @@ void ALevel0Monster::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrim
 		TeleportToRandomLocation();
 	}
 }
+
+void ALevel0Monster::OnPlayerDetected(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if(OtherActor && OtherActor == PlayerPawn)
+	{
+		KillPlayer(OtherActor);
+	}
+}
+
 
 
 

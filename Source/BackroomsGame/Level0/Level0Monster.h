@@ -38,6 +38,11 @@ public:
 	void Respawn();
 	void TeleportToRandomLocation();
 
+	UFUNCTION()
+	void OnPlayerDetected(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	void KillPlayer(AActor* PlayerActor);
+
 private:
 	FTimerHandle RoamingTimerHandle;
 	FTimerHandle VisibilityCheckTimerHandle;
