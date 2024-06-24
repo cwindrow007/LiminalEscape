@@ -14,6 +14,7 @@
 #include "NavigationPath.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ALevel0Monster::ALevel0Monster()
@@ -23,7 +24,7 @@ ALevel0Monster::ALevel0Monster()
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"));
 	PawnSensingComponent->OnSeePawn.AddDynamic(this, &ALevel0Monster::OnSeePawn);
 
-	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ALevel0Monster::OnSeePawn);
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ALevel0Monster::OnPlayerDetected);
 
 	bPlayerDetected = false;
 
@@ -151,9 +152,10 @@ void ALevel0Monster::OnPlayerDetected(UPrimitiveComponent* OverlappedComp, AActo
 {
 	if(OtherActor && OtherActor == PlayerPawn)
 	{
-		KillPlayer(OtherActor);
+		TeleportToRandomLocation();
 	}
-}
+} 
+
 
 
 
