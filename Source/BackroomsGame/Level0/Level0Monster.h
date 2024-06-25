@@ -70,6 +70,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float OnPlayerDetectSpeed;
 
-	FVector CurrentDestination;
+	FVector CurrentDirection;
+
+	void PickNewDirection();
 	
 };

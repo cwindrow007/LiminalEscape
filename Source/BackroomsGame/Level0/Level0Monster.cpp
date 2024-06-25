@@ -31,6 +31,8 @@ ALevel0Monster::ALevel0Monster()
 
 	BaseWalkSpeed = 450.0f;
 	OnPlayerDetectSpeed = 1400.0f;
+
+	CurrentDirection = FVector::ZeroVector;
 }
 
 // Called when the game starts or when spawned
@@ -61,19 +63,15 @@ void ALevel0Monster::Tick(float DeltaTime)
 	}
 	else if(bIsRoaming)
 	{
-		AAIController* AIController = Cast<AAIController>(GetController());
-		if (AIController && AIController->GetPathFollowingComponent()->GetStatus() == EPathFollowingStatus::Idle)
+		FVector NewLocation = GetActorLocation() + (CurrentDirection * BaseWalkSpeed * DeltaTime);
+		SetActorLocation(NewLocation);
+		
+		if(GetVelocity().Size() > 0)
 		{
-			bIsRoaming = false;
-			StartRoaming();
+			FRotator TargetRotation = GetVelocity().Rotation();
+			FRotator SmoothRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, 3.0f);
+			SetActorRotation(SmoothRotation);
 		}
-	}
-
-	if(GetVelocity().Size() > 0)
-	{
-		FRotator TargetRotation = GetVelocity().Rotation();
-		FRotator SmoothRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, 3.0f);
-		SetActorRotation(SmoothRotation);
 	}
 }
 
@@ -106,25 +104,20 @@ void ALevel0Monster::OnPlayerDetected(UPrimitiveComponent* OverlappedComp, AActo
 	}
 }
 
+void ALevel0Monster::PickNewDirection()
+{
+	FRotator RandomRotation = FRotator(0, FMath::RandRange(0.f, 360.f), 0);
+	CurrentDirection = RandomRotation.Vector();
+	bIsRoaming = true;
+}
+
+
 // Triggers Roaming off of Begin play
 void ALevel0Monster::StartRoaming()
 {
-	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
-	if(NavSys)
-	{
-		FNavLocation RandomLocation;
-		if(NavSys->GetRandomPointInNavigableRadius(GetActorLocation(), 1000.0f, RandomLocation))
-		{
-			CurrentDestination = RandomLocation.Location;
-			AAIController* AIController = Cast<AAIController>(GetController());
-			if(AIController)
-			{
-				AIController->MoveToLocation(CurrentDestination);
-				bIsRoaming = true;
-			}
-		}
-	}
-	GetWorldTimerManager().SetTimer(RoamingTimerHandle, this, &ALevel0Monster::StartRoaming, 5.0f, false);
+	PickNewDirection();
+	bIsRoaming = true;
+
 }
 
 void ALevel0Monster::CheckPlayerVisibility()
@@ -196,8 +189,8 @@ void ALevel0Monster::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrim
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	if (Other && Other == PlayerPawn)
+	if (Other && Other != PlayerPawn)
 	{
-		TeleportToRandomLocation();
+		PickNewDirection();
 	}
 }
