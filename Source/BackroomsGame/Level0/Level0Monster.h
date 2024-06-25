@@ -7,8 +7,6 @@
 #include "Perception/PawnSensingComponent.h"
 #include "Level0Monster.generated.h"
 
-
-
 UCLASS()
 class BACKROOMSGAME_API ALevel0Monster : public ACharacter
 {
@@ -26,20 +24,28 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// PawnSensingComponent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	UPawnSensingComponent* PawnSensingComponent;
 
 	UFUNCTION()
-	void OnSeePawn(APawn* Pawn);
+	void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
-	void StartRoaming();
-	void CheckPlayerVisibility();
-	void Despawn();
-	void Respawn();
-	void TeleportToRandomLocation();
+	UFUNCTION()
+	void OnSeePawn(APawn* Pawn);
 
 	UFUNCTION()
 	void OnPlayerDetected(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	void StartRoaming();
+
+	void CheckPlayerVisibility();
+
+	void Despawn();
+
+	void Respawn();
+
+	void TeleportToRandomLocation();
 
 	void KillPlayer(AActor* PlayerActor);
 
@@ -49,11 +55,15 @@ private:
 	FTimerHandle DespawnTimerHandle;
 	FTimerHandle RespawnTimerHandle;
 
+	UPROPERTY()
 	APawn* PlayerPawn;
+
+	UPROPERTY()
 	bool bPlayerDetected;
 
-protected:
-	virtual  void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
-	
+	UPROPERTY(EditDefaultsOnly, Category= "Movement")
+	float BaseWalkSpeed;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float OnPlayerDetectSpeed;
 };
