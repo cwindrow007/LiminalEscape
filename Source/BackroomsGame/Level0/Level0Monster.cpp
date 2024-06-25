@@ -27,9 +27,10 @@ ALevel0Monster::ALevel0Monster()
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ALevel0Monster::OnPlayerDetected);
 
 	bPlayerDetected = false;
+	bIsRoaming = false;
 
-	BaseWalkSpeed = 300.0f;
-	OnPlayerDetectSpeed = 600.0f;
+	BaseWalkSpeed = 450.0f;
+	OnPlayerDetectSpeed = 1400.0f;
 }
 
 // Called when the game starts or when spawned
@@ -42,7 +43,7 @@ void ALevel0Monster::BeginPlay()
 	// Activate pawn sensing
 	PawnSensingComponent->SetSensingInterval(0.5f);
 	PawnSensingComponent->SetPeripheralVisionAngle(90.0f);
-	PawnSensingComponent->SightRadius = 2000.0f;
+	PawnSensingComponent->SightRadius = 20000.0f;
 }
 
 // Called every frame
@@ -58,13 +59,21 @@ void ALevel0Monster::Tick(float DeltaTime)
 			AIController->MoveToActor(PlayerPawn);
 		}
 	}
-	else
+	else if(bIsRoaming)
 	{
 		AAIController* AIController = Cast<AAIController>(GetController());
 		if (AIController && AIController->GetPathFollowingComponent()->GetStatus() == EPathFollowingStatus::Idle)
 		{
+			bIsRoaming = false;
 			StartRoaming();
 		}
+	}
+
+	if(GetVelocity().Size() > 0)
+	{
+		FRotator TargetRotation = GetVelocity().Rotation();
+		FRotator SmoothRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, 3.0f);
+		SetActorRotation(SmoothRotation);
 	}
 }
 
@@ -100,13 +109,21 @@ void ALevel0Monster::OnPlayerDetected(UPrimitiveComponent* OverlappedComp, AActo
 // Triggers Roaming off of Begin play
 void ALevel0Monster::StartRoaming()
 {
-	FVector RandomLocation = GetActorLocation() + FMath::VRand() * 1000.0f;
-	AAIController* AIController = Cast<AAIController>(GetController());
-	if (AIController)
+	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
+	if(NavSys)
 	{
-		AIController->MoveToLocation(RandomLocation);
+		FNavLocation RandomLocation;
+		if(NavSys->GetRandomPointInNavigableRadius(GetActorLocation(), 1000.0f, RandomLocation))
+		{
+			CurrentDestination = RandomLocation.Location;
+			AAIController* AIController = Cast<AAIController>(GetController());
+			if(AIController)
+			{
+				AIController->MoveToLocation(CurrentDestination);
+				bIsRoaming = true;
+			}
+		}
 	}
-
 	GetWorldTimerManager().SetTimer(RoamingTimerHandle, this, &ALevel0Monster::StartRoaming, 5.0f, false);
 }
 
@@ -132,7 +149,7 @@ void ALevel0Monster::Despawn()
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 
-	GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &ALevel0Monster::Respawn, 5.0f, false);
+	GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &ALevel0Monster::Respawn, 10.0f, false);
 }
 
 void ALevel0Monster::Respawn()
@@ -142,7 +159,7 @@ void ALevel0Monster::Respawn()
 	if (UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld()))
 	{
 		FNavLocation NavLocation;
-		if (NavSys->GetRandomPointInNavigableRadius(PlayerLocation, 2000.0f, NavLocation))
+		if (NavSys->GetRandomPointInNavigableRadius(PlayerLocation, 4000.0f, NavLocation))
 		{
 			RandomLocation = NavLocation.Location;
 		}
@@ -162,7 +179,7 @@ void ALevel0Monster::TeleportToRandomLocation()
 	if (UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld()))
 	{
 		FNavLocation NavLocation;
-		if (NavSys->GetRandomPointInNavigableRadius(GetActorLocation(), 2000.0f, NavLocation))
+		if (NavSys->GetRandomPointInNavigableRadius(GetActorLocation(), 4000.0f, NavLocation))
 		{
 			RandomLocation = NavLocation.Location;
 		}

@@ -61,9 +61,15 @@ private:
 	UPROPERTY()
 	bool bPlayerDetected;
 
+	UPROPERTY()
+	bool bIsRoaming;
+
 	UPROPERTY(EditDefaultsOnly, Category= "Movement")
 	float BaseWalkSpeed;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float OnPlayerDetectSpeed;
+
+	FVector CurrentDestination;
+	
 };
