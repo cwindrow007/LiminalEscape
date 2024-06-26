@@ -1,5 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+//This animation is broken and needs a fix do this tmr.
+
 #include "Level0Monster.h"
 
 #include "AIController.h"
