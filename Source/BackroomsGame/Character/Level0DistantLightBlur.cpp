@@ -65,10 +65,10 @@ void ALevel0DistantLightBlur::UpdateBlurEffect()
 	FVector LightLocation = GetActorLocation();
 	float Distance = FMath::Abs(PlayerLocation.Y - LightLocation.Y);
 
-	float BlurAmount = 0.0f;
+	float BlurAmount = 1.0f;
 	if(Distance > MaxDistance)
 	{
-		BlurAmount = 1.0f;
+		BlurAmount = 1000000000.0f;
 	}
 	else
 	{
