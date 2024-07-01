@@ -29,7 +29,7 @@ ALevel0Monster::ALevel0Monster()
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ALevel0Monster::OnPlayerDetected);
 
 	bPlayerDetected = false;
-	bIsRoaming = false;
+	bIsRoaming = true;
 
 	BaseWalkSpeed = 450.0f;
 	OnPlayerDetectSpeed = 1400.0f;
@@ -54,6 +54,9 @@ void ALevel0Monster::BeginPlay()
 void ALevel0Monster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	float CurrentSpeed = GetVelocity().Size();
+	UE_LOG(LogTemp, Log, TEXT("AI Seed: %f"), CurrentSpeed);
 
 	if (bPlayerDetected && PlayerPawn)
 	{
