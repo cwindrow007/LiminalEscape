@@ -56,7 +56,7 @@ void ALevel0Monster::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	float CurrentSpeed = GetVelocity().Size();
-	UE_LOG(LogTemp, Log, TEXT("AI Seed: %f"), CurrentSpeed);
+	UE_LOG(LogTemp, Log, TEXT("AI Speed: %f"), CurrentSpeed);
 
 	if (bPlayerDetected && PlayerPawn)
 	{
@@ -68,9 +68,11 @@ void ALevel0Monster::Tick(float DeltaTime)
 	}
 	else if(bIsRoaming)
 	{
-		FVector NewLocation = GetActorLocation() + (CurrentDirection * BaseWalkSpeed * DeltaTime);
-		SetActorLocation(NewLocation);
+		FVector NewVelocity = CurrentDirection * BaseWalkSpeed;
+		GetCharacterMovement()->Velocity = NewVelocity;
 		
+		AddMovementInput(CurrentDirection);
+
 		if(GetVelocity().Size() > 0)
 		{
 			FRotator TargetRotation = GetVelocity().Rotation();
