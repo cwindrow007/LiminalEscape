@@ -58,14 +58,11 @@ void ALevel0Monster::Tick(float DeltaTime)
 	float CurrentSpeed = GetVelocity().Size();
 	UE_LOG(LogTemp, Log, TEXT("AI Speed: %f"), CurrentSpeed);
 
-	if (bPlayerDetected && PlayerPawn)
+	if(bPlayerDetected && PlayerPawn)
 	{
-		AAIController* AIController = Cast<AAIController>(GetController());
-		if (AIController)
-		{
-			AIController->MoveToActor(PlayerPawn);
-		}
+		MoveToPlayer(DeltaTime);
 	}
+
 	else if(bIsRoaming)
 	{
 		FVector NewVelocity = CurrentDirection * BaseWalkSpeed;
@@ -89,21 +86,39 @@ void ALevel0Monster::OnSeePawn(APawn* Pawn)
 	{
 		PlayerPawn = Pawn;
 		bPlayerDetected = true;
+		bIsRoaming = false;
 		GetCharacterMovement()->MaxWalkSpeed = OnPlayerDetectSpeed;
-		GetWorldTimerManager().ClearTimer(VisibilityCheckTimerHandle);
-		GetWorldTimerManager().SetTimer(VisibilityCheckTimerHandle, this, &ALevel0Monster::CheckPlayerVisibility, 1.0f, true);
-
-		// Print to log and on-screen
+		
+		
 		UE_LOG(LogTemp, Warning, TEXT("Player detected!"));
 		if (GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Player detected!"));
 		}
+		GetWorldTimerManager().SetTimer(VisibilityCheckTimerHandle, this, &ALevel0Monster::CheckPlayerVisibility, 1.0f, true);
 	}
 }
 
+void ALevel0Monster::MoveToPlayer(float DeltaTime)
+{
+	if(PlayerPawn)
+	{
+		FVector DirectionToPlayer = (PlayerPawn->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		FVector RunVelocity= DirectionToPlayer * OnPlayerDetectSpeed;
+		GetCharacterMovement()->Velocity = RunVelocity;
+
+		AddMovementInput(DirectionToPlayer, 1.0f);
+
+		FRotator TargetRotation = DirectionToPlayer.Rotation();
+		FRotator SmoothRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, 5.0f);
+		SetActorRotation(SmoothRotation);
+		
+	}
+}
+
+
 // Overlap Begin function
-void ALevel0Monster::OnPlayerDetected(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ALevel0Monster::OnPlayerDetected(UPrimitiveComponent* OvdCerlappeomp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor == PlayerPawn)
 	{

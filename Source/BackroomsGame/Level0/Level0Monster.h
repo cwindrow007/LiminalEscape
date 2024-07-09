@@ -50,6 +50,8 @@ public:
 
 	void KillPlayer(AActor* PlayerActor);
 
+	void MoveToPlayer(float DeltaTime);
+
 private:
 	FTimerHandle RoamingTimerHandle;
 	FTimerHandle VisibilityCheckTimerHandle;
