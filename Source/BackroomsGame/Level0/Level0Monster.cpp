@@ -32,7 +32,7 @@ ALevel0Monster::ALevel0Monster()
 	bIsRoaming = true;
 
 	BaseWalkSpeed = 450.0f;
-	OnPlayerDetectSpeed = 1400.0f;
+	OnPlayerDetectSpeed = 1200.0f;
 
 	CurrentDirection = FVector::ZeroVector;
 }
