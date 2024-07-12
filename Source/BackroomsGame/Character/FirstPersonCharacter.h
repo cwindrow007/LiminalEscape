@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Camera/CameraComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+
 #include "FirstPersonCharacter.generated.h"
 
 UCLASS()
@@ -27,5 +30,36 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+
+	// Components 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* FirstPersonCameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* FirstPersonMesh;
+
+
+	//Movement Components
+
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+	void Turn(float Value);
+	void LookUp(float Value);
+
+	//Headbob Parameters
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	bool bEnableHeadbob;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float HeadbobFrequency;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float HeadbobAmplitude;
+
+	void UpdateHeadbob(float DeltaTime);
+
+	//Camera Shake
+	void HandleCameraShake();
+	
 
 };
