@@ -20,6 +20,14 @@ AFirstPersonCharacter::AFirstPersonCharacter()
 	FirstPersonCameraComponent= CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f));
+	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+
+	//create mesh comp
+	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
+	FirstPersonMesh->SetOnlyOwnerSee(true);
+	FirstPersonMesh->SetupAttachment(FirstPersonCameraComponent);
+	FirstPersonMesh->bCastDynamicShadow = false;
+	FirstPersonMesh->CastShadow = true;
 
 }
 
