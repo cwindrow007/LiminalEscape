@@ -2,13 +2,24 @@
 
 
 #include "FirstPersonCharacter.h"
+#include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/InputComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/Controller.h"
+#include "GameFramework/SpringArmComponent.h"
 
 
 // Sets default values
 AFirstPersonCharacter::AFirstPersonCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	//Set size for Collision Capsule
+	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+
+	//Create a CameraComponent
+	FirstPersonCameraComponent= CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
+	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
+	FirstPersonCameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f));
 
 }
 
