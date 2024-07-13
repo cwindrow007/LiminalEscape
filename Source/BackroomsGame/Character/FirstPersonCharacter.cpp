@@ -29,6 +29,8 @@ AFirstPersonCharacter::AFirstPersonCharacter()
 	FirstPersonMesh->bCastDynamicShadow = false;
 	FirstPersonMesh->CastShadow = true;
 
+	//set base turn rates
+
 }
 
 // Called when the game starts or when spawned

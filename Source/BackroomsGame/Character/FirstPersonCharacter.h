@@ -43,9 +43,17 @@ private:
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
-	void Turn(float Value);
-	void LookUp(float Value);
+	void TurnAtRate(float Value);
+	void LookUpAtRate(float Value);
+	void StartSprint();
+	void StopSprint();
 
+	//Turn and Look Rates
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float BaseTurnRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float BaseLookUpRate;
 	//Headbob Parameters
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	bool bEnableHeadbob;
