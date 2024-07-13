@@ -30,6 +30,11 @@ AFirstPersonCharacter::AFirstPersonCharacter()
 	FirstPersonMesh->CastShadow = true;
 
 	//set base turn rates
+	BaseTurnRate = 45.f;
+	BaseLookUpRate = 45.f;
+
+	//Movement Speeds
+	
 
 }
 
