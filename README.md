@@ -1,3 +1,3 @@
-# BackroomsGame
+# Liminal Escape
 
-Developed with Unreal Engine 5
+Developed in Unreal Engine 5 with Cooper on Sound Design
