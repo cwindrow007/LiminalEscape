@@ -20,6 +20,10 @@ public:
 
 	void SaveSettings();
 	void LoadSettings();
+
+	//Sens
+	void SetSens(float NewSens);
+	float getSens()const;
 	
 //Graphics settings
 	void SetFullScreenMode(EWindowMode::Type NewMode);
@@ -99,5 +103,8 @@ private:
 
 	//Control Settings
 	TMap<FName, FKey> KeyBinds;
+
+	//Sens
+	float Sensitvity;
 	
 };

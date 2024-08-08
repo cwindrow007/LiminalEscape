@@ -184,6 +184,20 @@ bool UGameSettingsManager::GetVHSEffect() const
     return bVHSEffect;
 }
 
+//Sens
+void UGameSettingsManager::SetSens(float NewSens)
+{
+    Sensitvity = NewSens;
+    SaveSettings();
+}
+
+float UGameSettingsManager::getSens() const
+{
+    return Sensitvity;
+}
+
+
+
 // Controls Settings
 void UGameSettingsManager::SetKeyBinds(FName ActionName, FKey Key)
 {

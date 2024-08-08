@@ -54,6 +54,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float BaseLookUpRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float WalkSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float SprintSpeed;
 	//Headbob Parameters
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	bool bEnableHeadbob;
@@ -67,7 +73,14 @@ private:
 	void UpdateHeadbob(float DeltaTime);
 
 	//Camera Shake
-	void HandleCameraShake();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 	
+	void HandleCameraShake();
+
+	UPROPERTY()
+	class UGameSettingsManager* GameSettingsManager;
+
+	float Sensitivity;
 
 };
