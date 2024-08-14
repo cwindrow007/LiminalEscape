@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "InputAction.h"
 #include "GameSettingsManager.generated.h"
 
 /**
@@ -23,7 +24,7 @@ public:
 
 	//Sens
 	void SetSens(float NewSens);
-	float getSens()const;
+	float GetSens()const;
 	
 //Graphics settings
 	void SetFullScreenMode(EWindowMode::Type NewMode);
@@ -78,6 +79,12 @@ public:
 	void SetKeyBinds(FName ActionName, FKey Key);
 	FKey GetKeyBinds(FName ActionName) const;
 
+	//Functions to get UInputActions Assets
+	UInputAction* GetJumpAction() const;
+	UInputAction* GetSprintAction() const;
+	UInputAction* GetMoveForwardAction() const;
+	UInputAction* GetMoveRightAction() const;
+
 private:
 	//Graphics Settings
 	EWindowMode::Type FullScreenMode;
@@ -106,5 +113,18 @@ private:
 
 	//Sens
 	float Sensitvity;
+
+	//References to UINputAction Assets
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* JumpAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* SprintAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* MoveForwardAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* MoveRightAction;
 	
 };

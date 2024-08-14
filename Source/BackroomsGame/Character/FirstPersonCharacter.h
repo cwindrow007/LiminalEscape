@@ -6,7 +6,9 @@
 #include "GameFramework/Character.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-
+#include "InputAction.h"
+#include "InputMappingContext.h"
+#include "GameSettingsManager.generated.h"
 #include "FirstPersonCharacter.generated.h"
 
 UCLASS()
@@ -41,25 +43,38 @@ private:
 
 	//Movement Components
 
-	void MoveForward(float Value);
-	void MoveRight(float Value);
-	void TurnAtRate(float Value);
-	void LookUpAtRate(float Value);
-	void StartSprint();
-	void StopSprint();
+	UPROPERTY()
+	UInputAction* IA_Jump;
 
-	//Turn and Look Rates
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	float BaseTurnRate;
+	UPROPERTY()
+	UInputAction* IA_Sprint;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	float BaseLookUpRate;
+	UPROPERTY()
+	UInputAction* IA_MoveForward;
+
+	UPROPERTY()
+	UInputAction* IA_MoveRight;
+	
+
+	UPROPERTY()
+	UInputAction* IA_Turn;
+
+	UPROPERTY()
+	UInputAction* IA_LookUp;
+
+	// Enhanced Input Function Wrappers
+	void MoveForwardEnhanced(const FInputActionValue& Value);
+	void MoveRightEnhanced(const FInputActionValue& Value);
+	void TurnEnhanced(const FInputActionValue& Value);
+	void LookUpEnhanced(const FInputActionValue& Value);
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float WalkSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float SprintSpeed;
+
 	//Headbob Parameters
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	bool bEnableHeadbob;
@@ -71,6 +86,8 @@ private:
 	float HeadbobAmplitude;
 
 	void UpdateHeadbob(float DeltaTime);
+	void StartSprint();
+	void StopSprint();
 
 	//Camera Shake
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))

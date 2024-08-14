@@ -9,7 +9,56 @@
 UGameSettingsManager::UGameSettingsManager()
 {
     LoadSettings();
+
+    static ConstructorHelpers::FObjectFinder<UInputAction> JumpActionFinder(TEXT("/Game/Inputs/IA_Jump"));
+    if(JumpActionFinder.Succeeded())
+    {
+        JumpAction = JumpActionFinder.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UInputAction> SprintActionFinder(TEXT("/Game/Input/IA_Sprint"));
+    if (SprintActionFinder.Succeeded())
+    {
+        SprintAction = SprintActionFinder.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UInputAction> MoveForwardActionFinder(TEXT("/Game/Input/IA_MoveForward"));
+    if (MoveForwardActionFinder.Succeeded())
+    {
+        MoveForwardAction = MoveForwardActionFinder.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UInputAction> MoveRightActionFinder(TEXT("/Game/Input/IA_MoveRight"));
+    if (MoveRightActionFinder.Succeeded())
+    {
+        MoveRightAction = MoveRightActionFinder.Object;
+    }
+    
 }
+
+UInputAction* UGameSettingsManager::GetJumpAction() const
+{
+    return JumpAction;
+}
+
+UInputAction* UGameSettingsManager::GetSprintAction() const
+{
+    return SprintAction;
+}
+
+UInputAction* UGameSettingsManager::GetMoveForwardAction() const
+{
+    return MoveForwardAction;
+}
+
+UInputAction* UGameSettingsManager::GetMoveRightAction() const
+{
+    return MoveRightAction;
+}
+
+
+
+
 
 void UGameSettingsManager::SaveSettings()
 {
@@ -191,7 +240,7 @@ void UGameSettingsManager::SetSens(float NewSens)
     SaveSettings();
 }
 
-float UGameSettingsManager::getSens() const
+float UGameSettingsManager::GetSens() const
 {
     return Sensitvity;
 }
@@ -209,6 +258,7 @@ FKey UGameSettingsManager::GetKeyBinds(FName ActionName) const
     const FKey* Key = KeyBinds.Find(ActionName);
     return Key ? *Key : FKey();
 }
+
 
 
 

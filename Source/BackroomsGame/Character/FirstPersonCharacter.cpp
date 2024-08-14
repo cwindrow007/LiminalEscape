@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+/*
 #include "FirstPersonCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -7,6 +7,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "EnhancedInputComponent.h"
+#include "BackroomsGame/Menus/GameSettingsManager.h"
 
 // Sets default values
 AFirstPersonCharacter::AFirstPersonCharacter()
@@ -20,10 +22,16 @@ AFirstPersonCharacter::AFirstPersonCharacter()
     FirstPersonMesh->bCastDynamicShadow = false;
     FirstPersonMesh->CastShadow = true;
     
+    //Initialize Game Settings Manager
+    GameSettingsManager = CreateDefaultSubobject<UGameSettingsManager>(TEXT("GameSettingsManager"));
 
-    // Set base turn rates
-    BaseTurnRate = 45.f;
-    BaseLookUpRate = 45.f;
+    //Set up Input Actions from GameSettings Manager
+    IA_Jump = GameSettingsManager->GetJumpAction();
+    IA_Sprint = GameSettingsManager->GetSprintAction();
+    IA_MoveForward = GameSettingsManager->GetMoveForwardAction();
+    IA_MoveRight = GameSettingsManager->GetMoveRightAction();
+    IA_Turn = GameSettingsManager->GetTurnAction(); // Assuming there's a Turn action
+    IA_LookUp = GameSettingsManager->GetLookUpAction();
 
     // Movement Speeds
     WalkSpeed = 450.0f;
@@ -57,52 +65,35 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-    // Movement Functions
-    PlayerInputComponent->BindAxis("MoveForward", this, &AFirstPersonCharacter::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &AFirstPersonCharacter::MoveRight);
-
-    // Turn and LookUp Rates
-    PlayerInputComponent->BindAxis("TurnRate", this, &AFirstPersonCharacter::TurnAtRate);
-    PlayerInputComponent->BindAxis("LookUpAtRate", this, &AFirstPersonCharacter::LookUpAtRate);
-
-    // Bind Sprint Functions
-    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AFirstPersonCharacter::StartSprint);
-    PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AFirstPersonCharacter::StopSprint);
-}
-
-void AFirstPersonCharacter::MoveForward(float Value)
-{
-    if ((Controller != nullptr) && (Value != 0.0f))
+    if(UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
     {
-        const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YawRotation(0, Rotation.Yaw, 0);
+        EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+        EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
-        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-        AddMovementInput(Direction, Value);
+        EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Started, this, &AFirstPersonCharacter::StartSprint);
+        EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AFirstPersonCharacter::StopSprint);
+
+        EnhancedInputComponent->BindAction(IA_MoveForward, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::MoveForwardEnhanced);
+        EnhancedInputComponent->BindAction(IA_MoveRight, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::MoveRightEnhanced);
+        EnhancedInputComponent->BindAction(IA_Turn, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::TurnEnhanced);
+        EnhancedInputComponent->BindAction(IA_LookUp, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::LookUpEnhanced);
+        
     }
 }
 
-void AFirstPersonCharacter::MoveRight(float Value)
+void AFirstPersonCharacter::MoveForwardEnhanced(const FInputActionValue& Value)
 {
-    if ((Controller != nullptr) && (Value != 0.0f))
+    if (Controller && Value.Get<float>() != 0.0f)
     {
         const FRotator Rotation = Controller->GetControlRotation();
         const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-        AddMovementInput(Direction, Value);
+        const FVector Directio = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+        AddMovementInput(Direction, Value.Get<float>());
     }
 }
 
-void AFirstPersonCharacter::TurnAtRate(float Value)
-{
-    AddControllerYawInput(Value);
-}
 
-void AFirstPersonCharacter::LookUpAtRate(float Value)
-{
-    AddControllerPitchInput(Value);
-}
+
 
 void AFirstPersonCharacter::StartSprint()
 {
@@ -124,3 +115,4 @@ void AFirstPersonCharacter::UpdateHeadbob(float DeltaTime)
     FVector NewLocation = FirstPersonCameraComponent->GetRelativeLocation();
     NewLocation.Z += FMath::Sin(GetWorld()->TimeSeconds * HeadbobFrequency) * HeadbobAmplitude;
 }
+*/
