@@ -22,17 +22,30 @@ UGameSettingsManager::UGameSettingsManager()
         SprintAction = SprintActionFinder.Object;
     }
 
-    static ConstructorHelpers::FObjectFinder<UInputAction> MoveForwardActionFinder(TEXT("/Game/Input/IA_MoveForward"));
+    static ConstructorHelpers::FObjectFinder<UInputAction> MoveForwardActionFinder(TEXT("/Game/Input/IA_Move"));
     if (MoveForwardActionFinder.Succeeded())
     {
         MoveForwardAction = MoveForwardActionFinder.Object;
     }
 
-    static ConstructorHelpers::FObjectFinder<UInputAction> MoveRightActionFinder(TEXT("/Game/Input/IA_MoveRight"));
+    static ConstructorHelpers::FObjectFinder<UInputAction> MoveRightActionFinder(TEXT("/Game/Input/IA_Move"));
     if (MoveRightActionFinder.Succeeded())
     {
         MoveRightAction = MoveRightActionFinder.Object;
     }
+    
+    static ConstructorHelpers::FObjectFinder<UInputAction> TurnActionFinder(TEXT("/Game/Input/IA_Look"));
+    if(TurnActionFinder.Succeeded())
+    {
+        TurnAction = TurnActionFinder.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UInputAction> LookUpActionFinder(TEXT("/Game/Input/IA_Look"));
+    if(TurnActionFinder.Succeeded())
+    {
+        LookUpAction = TurnActionFinder.Object;
+    }
+    
     
 }
 
@@ -55,6 +68,18 @@ UInputAction* UGameSettingsManager::GetMoveRightAction() const
 {
     return MoveRightAction;
 }
+
+UInputAction* UGameSettingsManager::GetTurnAction() const
+{
+    return TurnAction;
+}
+
+UInputAction* UGameSettingsManager::GetLookUpAction() const
+{
+    return LookUpAction;
+}
+
+
 
 
 
@@ -258,12 +283,5 @@ FKey UGameSettingsManager::GetKeyBinds(FName ActionName) const
     const FKey* Key = KeyBinds.Find(ActionName);
     return Key ? *Key : FKey();
 }
-
-
-
-
-
-
-
 
 

@@ -10,6 +10,7 @@
 /**
  * 
  */
+
 UCLASS()
 class BACKROOMSGAME_API UGameSettingsManager : public UObject
 {
@@ -84,6 +85,8 @@ public:
 	UInputAction* GetSprintAction() const;
 	UInputAction* GetMoveForwardAction() const;
 	UInputAction* GetMoveRightAction() const;
+	UInputAction* GetTurnAction() const;
+	UInputAction* GetLookUpAction() const;
 
 private:
 	//Graphics Settings
@@ -126,5 +129,11 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* MoveRightAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* TurnAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* LookUpAction;
 	
 };

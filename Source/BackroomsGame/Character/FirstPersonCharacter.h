@@ -8,7 +8,6 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "InputAction.h"
 #include "InputMappingContext.h"
-#include "GameSettingsManager.generated.h"
 #include "FirstPersonCharacter.generated.h"
 
 UCLASS()

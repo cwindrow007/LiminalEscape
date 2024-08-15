@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-/*
+
 #include "FirstPersonCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -87,9 +87,30 @@ void AFirstPersonCharacter::MoveForwardEnhanced(const FInputActionValue& Value)
     {
         const FRotator Rotation = Controller->GetControlRotation();
         const FRotator YawRotation(0, Rotation.Yaw, 0);
-        const FVector Directio = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
         AddMovementInput(Direction, Value.Get<float>());
     }
+}
+
+void AFirstPersonCharacter::MoveRightEnhanced(const FInputActionValue& Value)
+{
+    if(Controller && Value.Get<float>()!= 0.0f)
+    {
+        const FRotator Rotation = Controller->GetControlRotation();
+        const FRotator YawRotation(0,Rotation.Yaw, 0);
+        const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+        AddMovementInput(Direction, Value.Get<float>());
+    }
+}
+
+void AFirstPersonCharacter::TurnEnhanced(const FInputActionValue& Value)
+{
+    AddControllerYawInput(Value.Get<float>());
+}
+
+void AFirstPersonCharacter::LookUpEnhanced(const FInputActionValue& Value)
+{
+    AddControllerPitchInput(Value.Get<float>());
 }
 
 
@@ -115,4 +136,3 @@ void AFirstPersonCharacter::UpdateHeadbob(float DeltaTime)
     FVector NewLocation = FirstPersonCameraComponent->GetRelativeLocation();
     NewLocation.Z += FMath::Sin(GetWorld()->TimeSeconds * HeadbobFrequency) * HeadbobAmplitude;
 }
-*/
