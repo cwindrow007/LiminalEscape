@@ -67,8 +67,8 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
     if(UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
     {
-        EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-        EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+        EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::Jump);
+        EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Completed, this, &AFirstPersonCharacter::StopJumping);
 
         EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Started, this, &AFirstPersonCharacter::StartSprint);
         EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AFirstPersonCharacter::StopSprint);
