@@ -80,13 +80,7 @@ public:
 	void SetKeyBinds(FName ActionName, FKey Key);
 	FKey GetKeyBinds(FName ActionName) const;
 
-	//Functions to get UInputActions Assets
-	UInputAction* GetJumpAction() const;
-	UInputAction* GetSprintAction() const;
-	UInputAction* GetMoveForwardAction() const;
-	UInputAction* GetMoveRightAction() const;
-	UInputAction* GetTurnAction() const;
-	UInputAction* GetLookUpAction() const;
+
 
 private:
 	//Graphics Settings

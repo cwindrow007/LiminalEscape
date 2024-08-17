@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "InputAction.h"
+#include "InputActionValue.h"
 #include "InputMappingContext.h"
 #include "FirstPersonCharacter.generated.h"
 
@@ -22,6 +23,15 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	void MoveForward(float Value);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputMappingContext* HazzyMappingContext;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* HazzyMoveAction;
+
+	void HazzyMove(const FInputActionValue& Value);
 
 public:	
 	// Called every frame
@@ -33,39 +43,11 @@ public:
 private:
 
 	// Components 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FirstPersonCameraComponent;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	//UCameraComponent* FirstPersonCameraComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* FirstPersonMesh;
-
-
-	//Movement Components
-
-	UPROPERTY()
-	UInputAction* IA_Jump;
-
-	UPROPERTY()
-	UInputAction* IA_Sprint;
-
-	UPROPERTY()
-	UInputAction* IA_MoveForward;
-
-	UPROPERTY()
-	UInputAction* IA_MoveRight;
-	
-
-	UPROPERTY()
-	UInputAction* IA_Turn;
-
-	UPROPERTY()
-	UInputAction* IA_LookUp;
-
-	// Enhanced Input Function Wrappers
-	void MoveForwardEnhanced(const FInputActionValue& Value);
-	void MoveRightEnhanced(const FInputActionValue& Value);
-	void TurnEnhanced(const FInputActionValue& Value);
-	void LookUpEnhanced(const FInputActionValue& Value);
 	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
@@ -93,9 +75,7 @@ private:
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 	
 	void HandleCameraShake();
-
-	UPROPERTY()
-	class UGameSettingsManager* GameSettingsManager;
+	
 
 	float Sensitivity;
 

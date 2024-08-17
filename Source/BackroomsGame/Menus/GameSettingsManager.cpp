@@ -9,74 +9,7 @@
 UGameSettingsManager::UGameSettingsManager()
 {
     LoadSettings();
-
-    static ConstructorHelpers::FObjectFinder<UInputAction> JumpActionFinder(TEXT("/Game/Inputs/IA_Jump"));
-    if(JumpActionFinder.Succeeded())
-    {
-        JumpAction = JumpActionFinder.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UInputAction> SprintActionFinder(TEXT("/Game/Input/IA_Sprint"));
-    if (SprintActionFinder.Succeeded())
-    {
-        SprintAction = SprintActionFinder.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UInputAction> MoveForwardActionFinder(TEXT("/Game/Input/IA_Move"));
-    if (MoveForwardActionFinder.Succeeded())
-    {
-        MoveForwardAction = MoveForwardActionFinder.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UInputAction> MoveRightActionFinder(TEXT("/Game/Input/IA_Move"));
-    if (MoveRightActionFinder.Succeeded())
-    {
-        MoveRightAction = MoveRightActionFinder.Object;
-    }
     
-    static ConstructorHelpers::FObjectFinder<UInputAction> TurnActionFinder(TEXT("/Game/Input/IA_Look"));
-    if(TurnActionFinder.Succeeded())
-    {
-        TurnAction = TurnActionFinder.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UInputAction> LookUpActionFinder(TEXT("/Game/Input/IA_Look"));
-    if(TurnActionFinder.Succeeded())
-    {
-        LookUpAction = TurnActionFinder.Object;
-    }
-    
-    
-}
-
-UInputAction* UGameSettingsManager::GetJumpAction() const
-{
-    return JumpAction;
-}
-
-UInputAction* UGameSettingsManager::GetSprintAction() const
-{
-    return SprintAction;
-}
-
-UInputAction* UGameSettingsManager::GetMoveForwardAction() const
-{
-    return MoveForwardAction;
-}
-
-UInputAction* UGameSettingsManager::GetMoveRightAction() const
-{
-    return MoveRightAction;
-}
-
-UInputAction* UGameSettingsManager::GetTurnAction() const
-{
-    return TurnAction;
-}
-
-UInputAction* UGameSettingsManager::GetLookUpAction() const
-{
-    return LookUpAction;
 }
 
 
