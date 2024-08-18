@@ -71,10 +71,10 @@ void AFirstPersonCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if (bEnableHeadbob)
-    {
-        UpdateHeadbob(DeltaTime);
-    }
+    //if (bEnableHeadbob)
+    //{
+       // UpdateHeadbob(DeltaTime);
+    //}
 }
 
 //Called Bind Functionality to input
