@@ -3,13 +3,14 @@
 #include "FirstPersonCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/InputComponent.h"
 #include "BackroomsGame/Menus/GameSettingsManager.h"
+#include "EntitySystem/MovieSceneEntitySystemTypes.h"
 
 // Sets default values
 AFirstPersonCharacter::AFirstPersonCharacter()
@@ -29,7 +30,7 @@ AFirstPersonCharacter::AFirstPersonCharacter()
     //Set up Input Actions from GameSettings Manager
     //IA_Jump = GameSettingsManager->GetJumpAction();
     //IA_Sprint = GameSettingsManager->GetSprintAction();
-   // IA_MoveForward = GameSettingsManager->GetMoveForwardAction();
+    //IA_MoveForward = GameSettingsManager->GetMoveForwardAction();
     //IA_MoveRight = GameSettingsManager->GetMoveRightAction();
     //IA_Turn = GameSettingsManager->GetTurnAction(); // Assuming there's a Turn action
     //IA_LookUp = GameSettingsManager->GetLookUpAction();
@@ -56,20 +57,45 @@ void AFirstPersonCharacter::BeginPlay()
        }
     }
 }
+
+//Hazzy Move Forward
 void AFirstPersonCharacter::HazzyMove(const FInputActionValue& Value)
 {
-    const bool Currentvalue = Value.Get<bool>();
-    if(Currentvalue)
+    const FVector2D HazzyMovementVector = Value.Get<FVector2D>();
+
+    const FRotator Rotation = Controller->GetControlRotation();
+    const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+
+    const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+    AddMovementInput(ForwardDirection, HazzyMovementVector.Y);
+    const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+    AddMovementInput(RightDirection, HazzyMovementVector.X);
+    
+}
+
+//Hazzy Look Action
+void AFirstPersonCharacter::HazzyLook(const FInputActionValue& Value)
+{
+    const  FVector2D LookAxisValue = Value.Get<FVector2D>();
+    if(GetController())
     {
-        UE_LOG(LogTemp, Warning, TEXT("Move Triggered"));
+        AddControllerYawInput(LookAxisValue.X);
+        AddControllerPitchInput(LookAxisValue.Y);
     }
 }
+void AFirstPersonCharacter::HazzyJump()
+{
+    Jump();
+}
+
 
 
 // Called every frame
 void AFirstPersonCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+ 
 
     //if (bEnableHeadbob)
     //{
@@ -85,6 +111,8 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
     if(UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
     {
         EnhancedInputComponent->BindAction(HazzyMoveAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyMove);
+        EnhancedInputComponent->BindAction(HazzyLookAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyLook);
+        EnhancedInputComponent->BindAction(HazzyJumpAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyJump);
     }
 }
 

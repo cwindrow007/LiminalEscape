@@ -19,26 +19,37 @@ class BACKROOMSGAME_API AFirstPersonCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AFirstPersonCharacter();
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void HazzyJump();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	void MoveForward(float Value);
-	
+
+	//Input Functions
+	void HazzyMove(const FInputActionValue& Value);
+	void HazzyLook(const FInputActionValue& Value);
+	virtual void Landed(const FHitResult& Hit) override;
+
+	//Properties for hazzy moving/mappings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputMappingContext* HazzyMappingContext;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* HazzyMoveAction;
 
-	void HazzyMove(const FInputActionValue& Value);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* HazzyLookAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* HazzyJumpAction;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
 
