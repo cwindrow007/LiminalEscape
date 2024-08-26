@@ -33,7 +33,7 @@ protected:
 	//Input Functions
 	void HazzyMove(const FInputActionValue& Value);
 	void HazzyLook(const FInputActionValue& Value);
-	virtual void Landed(const FHitResult& Hit) override;
+	//void HazzyInteract();
 
 	//Properties for hazzy moving/mappings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
@@ -47,6 +47,15 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* HazzyJumpAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* HazzyInteractAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* HazzySprintAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* HazzyCrouchAction;
 
 	
 
