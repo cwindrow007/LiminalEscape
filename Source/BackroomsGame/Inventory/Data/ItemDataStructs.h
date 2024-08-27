@@ -23,7 +23,7 @@ enum class EItemType: uint8
 };
 
 USTRUCT()
-struct FITemStatistics
+struct FItemStatistics
 {
 	GENERATED_USTRUCT_BODY()
 	
@@ -85,13 +85,16 @@ struct FItemData : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, Category = "Item Data")
+	FName ID;
+
+	UPROPERTY(EditAnywhere, Category = "Item Data")
 	EItemType ItemType;
 
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 	EItemQuality ItemQuality;
 
 	UPROPERTY(EditAnywhere, Category = "Item Data")
-	FITemStatistics FiTemStatistics;
+	FItemStatistics FiTemStatistics;
 
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 	FItemTextData TextDescription;
