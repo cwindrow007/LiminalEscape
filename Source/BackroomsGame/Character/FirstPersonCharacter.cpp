@@ -115,7 +115,10 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
         EnhancedInputComponent->BindAction(HazzyJumpAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyJump);
         //EnhancedInputComponent->BindAction(HazzyInteractAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyInteract);
         //EnhancedInputComponent->BindAction(HazzySprintAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyJump);
-        //EnhancedInputComponent->BindAction(HazzyCrouchAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyJump);
+        EnhancedInputComponent->BindAction(HazzySprintAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::StartSprint);
+        EnhancedInputComponent->BindAction(HazzySprintAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::StopSprint);
+        
+      
     }
 }
 
