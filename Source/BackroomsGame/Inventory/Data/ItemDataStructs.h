@@ -57,6 +57,8 @@ struct FItemNumericData
 {
 	GENERATED_USTRUCT_BODY()
 
+	
+
 	UPROPERTY(EditAnywhere)
 	int32 MaxStackSize;
 	
@@ -94,7 +96,7 @@ struct FItemData : public FTableRowBase
 	EItemQuality ItemQuality;
 
 	UPROPERTY(EditAnywhere, Category = "Item Data")
-	FItemStatistics FiTemStatistics;
+	FItemStatistics ItemStatistics;
 
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 	FItemTextData TextDescription;
