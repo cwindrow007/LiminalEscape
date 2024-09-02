@@ -9,6 +9,7 @@
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "BackroomsGame/Interfaces/InteractionInterface.h"
 #include "FirstPersonCharacter.generated.h"
 
 UCLASS()
@@ -30,11 +31,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
+
 	//Input Functions
 	void HazzyMove(const FInputActionValue& Value);
 	void HazzyLook(const FInputActionValue& Value);
+
 	//void HazzyInteract();
 
+	UPROPERTY(VisibleAnywhere, Category = "Interaction")
+	TScriptInterface<IInteractionInterface> TargetInteractable;
+
+	
 	//Properties for hazzy moving/mappings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputMappingContext* HazzyMappingContext;

@@ -13,8 +13,8 @@ UItemBase* UItemBase::CreateItemCopy()
 {
 	UItemBase* ItemCopy = NewObject<UItemBase>(StaticClass());
 
-	ItemCopy -> ID = this ->ID;
-	ItemCopy -> Quantity = this ->Quantity;
+	ItemCopy -> ID = this -> ID;
+	ItemCopy -> Quantity = this -> Quantity;
 	ItemCopy -> ItemQuality = this -> ItemQuality;
 	ItemCopy -> ItemType = this -> ItemType;
 	ItemCopy -> TextDescription = this -> TextDescription;
