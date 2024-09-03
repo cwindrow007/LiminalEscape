@@ -10,6 +10,7 @@
 /**
  * 
  */
+
 UCLASS()
 class BACKROOMSGAME_API UItemBase : public UObject
 {

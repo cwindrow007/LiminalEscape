@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+//Dependencies
 #include "FirstPersonCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -11,7 +12,7 @@
 #include "Components/InputComponent.h"
 #include "BackroomsGame/Menus/GameSettingsManager.h"
 #include "EntitySystem/MovieSceneEntitySystemTypes.h"
-
+#include "DrawDebugHelpers.h"
 // Sets default values
 AFirstPersonCharacter::AFirstPersonCharacter()
 {
@@ -43,6 +44,10 @@ AFirstPersonCharacter::AFirstPersonCharacter()
     bEnableHeadbob = true;
     HeadbobFrequency = 10.0f;
     HeadbobAmplitude = 1.0f;
+
+    //Interaction Time
+    InteractionCheckFrequency = 0.1;
+    InteractionCheckDistance = 235.0f;
 }
 
 // Called when the game starts or when spawned
@@ -56,6 +61,43 @@ void AFirstPersonCharacter::BeginPlay()
            Subsystem->AddMappingContext(HazzyMappingContext, 0);
        }
     }
+}
+
+//Called Bind Functionality to input
+void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
+    if(UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+    {
+        EnhancedInputComponent->BindAction(HazzyMoveAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyMove);
+        EnhancedInputComponent->BindAction(HazzyLookAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyLook);
+        EnhancedInputComponent->BindAction(HazzyJumpAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyJump);
+        EnhancedInputComponent->BindAction(HazzyInteractAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::BeginInteract);
+        EnhancedInputComponent->BindAction(HazzyInteractAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::EndInteract);
+        //EnhancedInputComponent->BindAction(HazzySprintAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyJump);
+        EnhancedInputComponent->BindAction(HazzySprintAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::StartSprint);
+        EnhancedInputComponent->BindAction(HazzySprintAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::StopSprint);
+        
+      
+    }
+}
+
+// Called every frame
+void AFirstPersonCharacter::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+
+    if(GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
+    {
+        PerformInteractionCheck();
+    }
+
+ 
+
+    //if (bEnableHeadbob)
+    //{
+    // UpdateHeadbob(DeltaTime);
+    //}
 }
 
 //Hazzy Move Forward
@@ -88,41 +130,7 @@ void AFirstPersonCharacter::HazzyJump()
     Jump();
 }
 
-
-
-// Called every frame
-void AFirstPersonCharacter::Tick(float DeltaTime)
-{
-    Super::Tick(DeltaTime);
-
- 
-
-    //if (bEnableHeadbob)
-    //{
-       // UpdateHeadbob(DeltaTime);
-    //}
-}
-
-//Called Bind Functionality to input
-
-void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-    Super::SetupPlayerInputComponent(PlayerInputComponent);
-    if(UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
-    {
-        EnhancedInputComponent->BindAction(HazzyMoveAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyMove);
-        EnhancedInputComponent->BindAction(HazzyLookAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyLook);
-        EnhancedInputComponent->BindAction(HazzyJumpAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyJump);
-        //EnhancedInputComponent->BindAction(HazzyInteractAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyInteract);
-        //EnhancedInputComponent->BindAction(HazzySprintAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyJump);
-        EnhancedInputComponent->BindAction(HazzySprintAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::StartSprint);
-        EnhancedInputComponent->BindAction(HazzySprintAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::StopSprint);
-        
-      
-    }
-}
-
-
+//Sprint Handling
 void AFirstPersonCharacter::StartSprint()
 {
     GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
@@ -132,6 +140,7 @@ void AFirstPersonCharacter::StopSprint()
 {
     GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
+
 
  /*void AFirstPersonCharacter::UpdateHeadbob(float DeltaTime)
 {
@@ -144,3 +153,135 @@ void AFirstPersonCharacter::StopSprint()
     NewLocation.Z += FMath::Sin(GetWorld()->TimeSeconds * HeadbobFrequency) * HeadbobAmplitude;
 }
 */
+//==================================================
+//INTERACTION FUNCTIONS
+//==================================================
+
+void AFirstPersonCharacter::PerformInteractionCheck()
+{
+    InteractionData.LastInteractionCheckTime = GetWorld()-> GetTimeSeconds();
+
+    FVector TraceStart{GetPawnViewLocation()};
+    FVector TraceEnd{TraceStart + (GetViewRotation().Vector() * InteractionCheckDistance)};
+
+    float LookDirection = FVector::DotProduct(GetActorForwardVector(), GetViewRotation().Vector());
+
+    if(LookDirection > 0)
+    {
+        //DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
+
+        //Line Tracing
+        FCollisionQueryParams QueryParams;
+        QueryParams.AddIgnoredActor(this);
+        FHitResult TraceHit;
+
+        if(GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd,ECC_Visibility,QueryParams))
+        {
+            if(TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+            {
+                const float Distance = (TraceStart - TraceHit.ImpactPoint).Size();
+
+                if(TraceHit.GetActor() != InteractionData.CurrentInteractable && Distance <= InteractionCheckDistance)
+                {
+                    FoundInteractable(TraceHit.GetActor());
+                    return;
+                }
+
+                if(TraceHit.GetActor() == InteractionData.CurrentInteractable)
+                {
+                    return;
+                }
+            }
+        }
+    }
+    NointeractableFound();
+}
+
+void AFirstPersonCharacter::FoundInteractable(AActor* NewInteractable)
+{
+    if(IsInteracting())
+    {
+        EndInteract();
+    }
+
+    if(InteractionData.CurrentInteractable)
+    {
+        TargetInteractable =  InteractionData.CurrentInteractable;
+        TargetInteractable->EndFocus();
+    }
+
+    InteractionData.CurrentInteractable = NewInteractable;
+    TargetInteractable = NewInteractable;
+
+    TargetInteractable->BeginFocus();
+}
+void AFirstPersonCharacter::NointeractableFound()
+{
+    if(IsInteracting())
+    {
+        GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+    }
+
+    if(InteractionData.CurrentInteractable)
+    {
+        if(IsValid(TargetInteractable.GetObject()))
+        {
+            TargetInteractable->EndFocus();
+        }
+
+        //hide Interaction Widget on Hud
+        InteractionData.CurrentInteractable = nullptr;
+        TargetInteractable = nullptr;
+    
+    }
+}
+
+void AFirstPersonCharacter::BeginInteract()
+{
+    //Verification to ensure nothing has changed since beginning interaction state
+    PerformInteractionCheck();
+//If Interaction is teh current interaction then set 0 duration to interact set a timer for the duration and do not loop
+    if(InteractionData.CurrentInteractable)
+    {
+        if(IsValid(TargetInteractable.GetObject()))
+        {
+            TargetInteractable->BeginInteract();
+
+            if(FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
+            {
+                Interact();
+            }
+            else
+            {
+                GetWorldTimerManager().SetTimer(TimerHandle_Interaction,
+                    this,
+                    &AFirstPersonCharacter::Interact,
+                    TargetInteractable-> InteractableData.InteractionDuration,
+                    false);
+            }
+        }
+    }
+}
+
+void AFirstPersonCharacter::EndInteract()
+{
+    GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+    if(IsValid(TargetInteractable.GetObject()))
+    {
+        TargetInteractable->EndInteract();
+    }
+}
+
+void AFirstPersonCharacter::Interact()
+{
+    GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+
+    if(IsValid(TargetInteractable.GetObject()))
+    {
+        TargetInteractable->Interact();
+    }
+}
+
+
+
+

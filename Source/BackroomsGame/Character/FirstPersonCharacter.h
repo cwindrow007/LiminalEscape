@@ -9,8 +9,27 @@
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
-//#include "BackroomsGame/Interfaces/InteractionInterface.h"
+#include "BackroomsGame/Interfaces/InteractionInterface.h"
 #include "FirstPersonCharacter.generated.h"
+
+
+USTRUCT()
+struct FInteractionData
+{
+	GENERATED_USTRUCT_BODY()
+
+	FInteractionData() : CurrentInteractable(nullptr), LastInteractionCheckTime(0.0f)
+	{
+		
+	}
+
+	UPROPERTY()
+	AActor* CurrentInteractable;
+
+	UPROPERTY()
+	float LastInteractionCheckTime;
+	
+};
 
 UCLASS()
 class BACKROOMSGAME_API AFirstPersonCharacter : public ACharacter
@@ -21,11 +40,13 @@ public:
 	// Sets default values for this character's properties
 	AFirstPersonCharacter();
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaSeconds) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void HazzyJump();
+
+	FORCEINLINE bool IsInteracting() const{ return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); };
 
 protected:
 	// Called when the game starts or when spawned
@@ -37,10 +58,26 @@ protected:
 	void HazzyMove(const FInputActionValue& Value);
 	void HazzyLook(const FInputActionValue& Value);
 
-	//void HazzyInteract();
+	//Interactions Handler
 
-	//UPROPERTY(VisibleAnywhere, Category = "Interaction")
-	//TScriptInterface<IInteractionInterface> TargetInteractable;
+	UPROPERTY(VisibleAnywhere, Category = "Interaction")
+	TScriptInterface<IInteractionInterface> TargetInteractable;
+
+	float InteractionCheckFrequency;
+
+	float InteractionCheckDistance;
+
+	FTimerHandle TimerHandle_Interaction;
+
+	FInteractionData InteractionData;
+
+	//Interaction Check Functions
+	void PerformInteractionCheck();
+	void FoundInteractable(AActor* NewInteractable);
+	void NointeractableFound();
+	void BeginInteract();
+	void EndInteract();
+	void Interact();
 
 	
 	//Properties for hazzy moving/mappings
