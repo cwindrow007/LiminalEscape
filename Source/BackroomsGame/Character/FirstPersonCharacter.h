@@ -9,7 +9,7 @@
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
-#include "BackroomsGame/Interfaces/InteractionInterface.h"
+//#include "BackroomsGame/Interfaces/InteractionInterface.h"
 #include "FirstPersonCharacter.generated.h"
 
 UCLASS()
@@ -39,8 +39,8 @@ protected:
 
 	//void HazzyInteract();
 
-	UPROPERTY(VisibleAnywhere, Category = "Interaction")
-	TScriptInterface<IInteractionInterface> TargetInteractable;
+	//UPROPERTY(VisibleAnywhere, Category = "Interaction")
+	//TScriptInterface<IInteractionInterface> TargetInteractable;
 
 	
 	//Properties for hazzy moving/mappings
