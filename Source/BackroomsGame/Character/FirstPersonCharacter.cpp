@@ -185,9 +185,7 @@ void AFirstPersonCharacter::PerformInteractionCheck()
         {
             if(TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
             {
-                const float Distance = (TraceStart - TraceHit.ImpactPoint).Size();
-
-                if(TraceHit.GetActor() != InteractionData.CurrentInteractable && Distance <= InteractionCheckDistance)
+                if(TraceHit.GetActor() != InteractionData.CurrentInteractable )
                 {
                     FoundInteractable(TraceHit.GetActor());
                     return;
@@ -246,7 +244,7 @@ void AFirstPersonCharacter::BeginInteract()
 {
     //Verification to ensure nothing has changed since beginning interaction state
     PerformInteractionCheck();
-//If Interaction is teh current interaction then set 0 duration to interact set a timer for the duration and do not loop
+//If Interaction is the current interaction then set 0 duration to interact set a timer for the duration and do not loop
     if(InteractionData.CurrentInteractable)
     {
         if(IsValid(TargetInteractable.GetObject()))
@@ -284,7 +282,7 @@ void AFirstPersonCharacter::Interact()
 
     if(IsValid(TargetInteractable.GetObject()))
     {
-        TargetInteractable->Interact();
+        TargetInteractable->Interact(this);
     }
 }
 

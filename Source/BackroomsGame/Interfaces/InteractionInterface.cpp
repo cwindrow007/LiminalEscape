@@ -2,6 +2,7 @@
 
 
 #include "InteractionInterface.h"
+#include "BackroomsGame/Character/FirstPersonCharacter.h"
 
 // Add default functionality here for any IInteractionInterface functions that are not pure virtual.
 
@@ -25,7 +26,7 @@ void IInteractionInterface::EndInteract()
 	
 }
 
-void IInteractionInterface::Interact()
+void IInteractionInterface::Interact(AFirstPersonCharacter* FirstPersonCharacter)
 {
 	
 }

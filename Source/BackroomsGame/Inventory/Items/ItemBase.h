@@ -73,7 +73,7 @@ protected:
 //Does ID match Other ID
 	bool operator==(const FName& OtherID) const
 	{
-		return ID == OtherID;
+		return this->ID == OtherID;
 	}
 	
 	
