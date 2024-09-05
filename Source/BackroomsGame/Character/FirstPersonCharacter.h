@@ -9,6 +9,7 @@
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "SanitySystem.h"
 #include "BackroomsGame/Interfaces/InteractionInterface.h"
 #include "FirstPersonCharacter.generated.h"
 
@@ -143,5 +144,9 @@ private:
 	
 
 	float Sensitivity;
+
+	//Sanity System
+
+	USanitySystem* SanitySystem;
 
 };

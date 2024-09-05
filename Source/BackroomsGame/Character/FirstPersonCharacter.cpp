@@ -61,6 +61,12 @@ void AFirstPersonCharacter::BeginPlay()
            Subsystem->AddMappingContext(HazzyMappingContext, 0);
        }
     }
+
+    //Sanity System Set Variable
+
+    SanitySystem = NewObject<USanitySystem>();
+    SanitySystem->Initialize(100.0f, 3.33333333f);
+    SanitySystem->StartSanityDepletion(GetWorld());
 }
 
 //Called Bind Functionality to input
