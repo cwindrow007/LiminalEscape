@@ -65,7 +65,7 @@ void AFirstPersonCharacter::BeginPlay()
     //Sanity System Set Variable
 
     SanitySystem = NewObject<USanitySystem>();
-    SanitySystem->Initialize(100.0f, 3.33333333f);
+    SanitySystem->Initialize(100.0f, 0.238f);
     SanitySystem->StartSanityDepletion(GetWorld());
 }
 
