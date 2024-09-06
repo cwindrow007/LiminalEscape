@@ -24,17 +24,6 @@ AFirstPersonCharacter::AFirstPersonCharacter()
     FirstPersonMesh->SetOnlyOwnerSee(true);
     FirstPersonMesh->bCastDynamicShadow = false;
     FirstPersonMesh->CastShadow = true;
-    
-    //Initialize Game Settings Manager
-    //GameSettingsManager = CreateDefaultSubobject<UGameSettingsManager>(TEXT("GameSettingsManager"));
-
-    //Set up Input Actions from GameSettings Manager
-    //IA_Jump = GameSettingsManager->GetJumpAction();
-    //IA_Sprint = GameSettingsManager->GetSprintAction();
-    //IA_MoveForward = GameSettingsManager->GetMoveForwardAction();
-    //IA_MoveRight = GameSettingsManager->GetMoveRightAction();
-    //IA_Turn = GameSettingsManager->GetTurnAction(); // Assuming there's a Turn action
-    //IA_LookUp = GameSettingsManager->GetLookUpAction();
 
     // Movement Speeds
     WalkSpeed = 450.0f;
@@ -63,13 +52,15 @@ void AFirstPersonCharacter::BeginPlay()
     }
 
     //Sanity System Set Variable
-
+    
     SanitySystem = NewObject<USanitySystem>();
     SanitySystem->Initialize(100.0f, 0.238f);
     SanitySystem->StartSanityDepletion(GetWorld());
 }
 
-//Called Bind Functionality to input
+//==================================================
+//MOVEMETN FUNCTIONS
+//==================================================
 void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -80,7 +71,6 @@ void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
         EnhancedInputComponent->BindAction(HazzyJumpAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyJump);
         EnhancedInputComponent->BindAction(HazzyInteractAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::BeginInteract);
         EnhancedInputComponent->BindAction(HazzyInteractAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::EndInteract);
-        //EnhancedInputComponent->BindAction(HazzySprintAction, ETriggerEvent::Triggered, this, &AFirstPersonCharacter::HazzyJump);
         EnhancedInputComponent->BindAction(HazzySprintAction, ETriggerEvent::Started, this, &AFirstPersonCharacter::StartSprint);
         EnhancedInputComponent->BindAction(HazzySprintAction, ETriggerEvent::Completed, this, &AFirstPersonCharacter::StopSprint);
         
