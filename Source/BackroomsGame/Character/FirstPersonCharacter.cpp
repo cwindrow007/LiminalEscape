@@ -59,7 +59,7 @@ void AFirstPersonCharacter::BeginPlay()
 }
 
 //==================================================
-//MOVEMETN FUNCTIONS
+//MOVEMENT FUNCTIONS
 //==================================================
 void AFirstPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -191,6 +191,7 @@ void AFirstPersonCharacter::PerformInteractionCheck()
     NointeractableFound();
 }
 
+//Found interaction for Interactable Items
 void AFirstPersonCharacter::FoundInteractable(AActor* NewInteractable)
 {
     if(IsInteracting())
@@ -230,6 +231,7 @@ void AFirstPersonCharacter::NointeractableFound()
     }
 }
 
+//Begin Interaction Function
 void AFirstPersonCharacter::BeginInteract()
 {
     //Verification to ensure nothing has changed since beginning interaction state
@@ -257,6 +259,7 @@ void AFirstPersonCharacter::BeginInteract()
     }
 }
 
+//Ends Interaction after Beging Interact and interact is called, Called upon in ETrigger movement for enhanced input actions
 void AFirstPersonCharacter::EndInteract()
 {
     GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
