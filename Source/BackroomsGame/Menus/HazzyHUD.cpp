@@ -48,24 +48,24 @@ void AHazzyHUD::HideMenu()
 	}
 }
 
-void AHazzyHUD::ShowInteractionWidget()
+void AHazzyHUD::ShowInteractionWidget() const
 {
 	if(InteractionWidget)
 	{
-		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		InteractionWidget->SetVisibility(ESlateVisibility::Visible) ;
 	}
 }
 
-void AHazzyHUD::HideInteractionWidget()
+void AHazzyHUD::HideInteractionWidget() const
 {
 	if(InteractionWidget)
 	{
-		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
 
-void AHazzyHUD::UpdateInteractionWidget(const FInteractableData* InteractableData)
+void AHazzyHUD::UpdateInteractionWidget(const FInteractableData* InteractableData) const
 {
 	if(InteractionWidget)
 	{
@@ -74,6 +74,6 @@ void AHazzyHUD::UpdateInteractionWidget(const FInteractableData* InteractableDat
 			InteractionWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 
-		//InteractionWidget->UpdateWidget(InteractableData);
+		InteractionWidget->UpdateWidget(InteractableData);
 	}
 }

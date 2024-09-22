@@ -43,6 +43,10 @@ AFirstPersonCharacter::AFirstPersonCharacter()
 void AFirstPersonCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    //HudCast
+    HUD = Cast<AHazzyHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+    
     if(APlayerController* PlayerController = Cast<APlayerController>(GetController()))
     {
        if(UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -208,8 +212,11 @@ void AFirstPersonCharacter::FoundInteractable(AActor* NewInteractable)
     InteractionData.CurrentInteractable = NewInteractable;
     TargetInteractable = NewInteractable;
 
+    HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+
     TargetInteractable->BeginFocus();
 }
+
 void AFirstPersonCharacter::NointeractableFound()
 {
     if(IsInteracting())
@@ -224,7 +231,8 @@ void AFirstPersonCharacter::NointeractableFound()
             TargetInteractable->EndFocus();
         }
 
-        //hide Interaction Widget on Hud
+        HUD->HideInteractionWidget();
+        
         InteractionData.CurrentInteractable = nullptr;
         TargetInteractable = nullptr;
     
@@ -259,7 +267,7 @@ void AFirstPersonCharacter::BeginInteract()
     }
 }
 
-//Ends Interaction after Beging Interact and interact is called, Called upon in ETrigger movement for enhanced input actions
+//Ends Interaction after Begin Interact and interact is called, Called upon in ETrigger movement for enhanced input actions
 void AFirstPersonCharacter::EndInteract()
 {
     GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);

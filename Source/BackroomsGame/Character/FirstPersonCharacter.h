@@ -11,6 +11,7 @@
 #include "InputMappingContext.h"
 #include "SanitySystem.h"
 #include "BackroomsGame/Interfaces/InteractionInterface.h"
+#include "BackroomsGame/Menus/HazzyHUD.h"
 #include "FirstPersonCharacter.generated.h"
 
 
@@ -79,6 +80,9 @@ protected:
 	void BeginInteract();
 	void EndInteract();
 	void Interact();
+
+	UPROPERTY()
+	AHazzyHUD* HUD;
 
 	
 	//Properties for hazzy moving/mappings

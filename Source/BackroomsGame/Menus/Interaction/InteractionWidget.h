@@ -24,7 +24,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Interaction Widget | Player Reference")
 	AFirstPersonCharacter* PlayerReference;
 
-	void UpdateWidget(const FInteractableData* InteractableData);
+	void UpdateWidget(const FInteractableData* InteractableData) const;
 
 protected:
 
