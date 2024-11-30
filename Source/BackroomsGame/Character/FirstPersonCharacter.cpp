@@ -168,7 +168,9 @@ void AFirstPersonCharacter::PerformInteractionCheck()
 
     if(LookDirection > 0)
     {
-        DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
+        //!This is the line debugger incase you want to check item checks
+        //! 
+       // DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
 
         //Line Tracing
         FCollisionQueryParams QueryParams;
