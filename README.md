@@ -1,7 +1,7 @@
 # Liminal Escape
 ![https://github.com/cwindrow007/LiminalEscape/blob/master/GamePlayScreenShots/Liminal%20Escape%20(1).png](https://github.com/cwindrow007/LiminalEscape/blob/master/GamePlayScreenShots/Liminal%20Escape%20(1).png)
 <br/>
-Liminal Escape is a Backrooms style liminal space psychological horror game developed by the owner of this repository, Christopher Windrow.
+Liminal Escape is a Backrooms style liminal space psychological horror game developed by the owners of this repository, Christopher Windrow and Blake Shippee.
 # Core Concepts 
 Liminal Escape features many renowned backrooms levels. These levels 
 draw from the Backrooms Wiki, Kane Pixels, r/LiminalSpaces, and those who send in images in which encapsulate the idea of Liminality.
@@ -38,7 +38,7 @@ A form will be required for play testing. The game will be released in early acc
 * The Windows
 * Uncanny Households
 <br/>
-Note:These are subject to change and evolve
+Note: These are subject to change and evolve
 
 # What if I'm a speedrunner?
 Wonderful. We want to keep the integrity of speed running backrooms games for those and offer a feature of game modes. First off we will have a speedrun mode.
