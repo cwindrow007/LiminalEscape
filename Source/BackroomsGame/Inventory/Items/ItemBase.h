@@ -7,9 +7,7 @@
 #include "BackroomsGame/Inventory/Data/ItemDataStructs.h"
 #include "ItemBase.generated.h"
 
-/**
- * 
- */
+
 
 UCLASS()
 class BACKROOMSGAME_API UItemBase : public UObject

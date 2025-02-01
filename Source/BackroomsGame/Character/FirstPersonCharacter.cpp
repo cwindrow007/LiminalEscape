@@ -17,7 +17,7 @@
 AFirstPersonCharacter::AFirstPersonCharacter()
 {
     // Set size for Collision Capsule
-    GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+    GetCapsuleComponent()->InitCapsuleSize(66.f, 155.0f);
 
     // Create mesh component
     FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
@@ -122,7 +122,7 @@ void AFirstPersonCharacter::HazzyLook(const FInputActionValue& Value)
     if(GetController())
     {
         AddControllerYawInput(LookAxisValue.X);
-        AddControllerPitchInput(LookAxisValue.Y);
+        AddControllerPitchInput(FMath::Clamp(LookAxisValue.Y, -89.0f, 89.0f));
     }
 }
 void AFirstPersonCharacter::HazzyJump()

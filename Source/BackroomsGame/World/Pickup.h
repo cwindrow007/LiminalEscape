@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-/*
+
 
 #pragma once
 
@@ -31,21 +31,31 @@ public:
 
 	FORCEINLINE UItemBase* GetItemData(){return ItemReference; }
 
+	virtual void BeginFocus() override;
+	
+	virtual void EndFocus() override;
+
+
 protected:
-public:
 	//=============================================================================
 	//PROPERTIES AND VARIABLES 
 	//=============================================================================
+	UPROPERTY(VisibleAnywhere, Category = "Pickup | Components")
 	UStaticMeshComponent* PickupMesh;
-	
+
+	UPROPERTY(EditInstanceOnly, Category = "Pickup | Item Database")
 	UDataTable* ItemDataTable;
 
+	UPROPERTY(EditInstanceOnly, Category = "Pickup | Item Database")
 	FName DesiredItemID;
 
+	UPROPERTY(VisibleAnywhere, Category = "Pickup | Item Reference")
 	UItemBase* ItemReference;
 
+	UPROPERTY(EditInstanceOnly, Category = "Pickup | Item Initialization")
 	int32 ItemQuantity;
-
+	
+	UPROPERTY(VisibleInstanceOnly, Category = "Pickup | Interaction")
 	FInteractableData InstanceInteractableData;
 	
 	//=============================================================================
@@ -54,8 +64,9 @@ public:
 	
 
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
 	
+	virtual void Interact(AFirstPersonCharacter* PlayerCharacter) override;
+	void UpdateInteractableDate();
 
+	void takePickup(const AFirstPersonCharacter* Taker);
 };
-*/
