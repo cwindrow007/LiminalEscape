@@ -44,6 +44,13 @@ void AFirstPersonCharacter::BeginPlay()
 {
     Super::BeginPlay();
 
+    FirstPersonCameraComponent = FindComponentByClass<UCameraComponent>();
+
+    if(!FirstPersonCameraComponent)
+    {
+        UE_LOG(LogTemp, Error, TEXT("FIRST PERSON CAMERA IS NULL"))
+    }
+
     //HudCast
     HUD = Cast<AHazzyHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
     
@@ -123,6 +130,12 @@ void AFirstPersonCharacter::HazzyLook(const FInputActionValue& Value)
     {
         AddControllerYawInput(LookAxisValue.X);
         AddControllerPitchInput(FMath::Clamp(LookAxisValue.Y, -89.0f, 89.0f));
+
+        if(FirstPersonCameraComponent)
+        {
+            FRotator NewRotation = FirstPersonCameraComponent->GetRelativeRotation();
+            FirstPersonMesh->SetRelativeRotation(FRotator(NewRotation.Pitch, 0.f, 0.f));
+        }
     }
 }
 void AFirstPersonCharacter::HazzyJump()
