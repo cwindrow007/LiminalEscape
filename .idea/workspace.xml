@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="40914a8c-ca40-44ec-9357-2837e6227899" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/GamePlayScreenShots/Liminal Escape (1).png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-    </list>
+    <list default="true" id="40914a8c-ca40-44ec-9357-2837e6227899" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -71,6 +68,7 @@
       <updated>1736987921399</updated>
       <workItem from="1736987923077" duration="812000" />
       <workItem from="1736988747511" duration="1088000" />
+      <workItem from="1739387871671" duration="88000" />
     </task>
     <servers />
   </component>
