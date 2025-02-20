@@ -14,7 +14,7 @@ APickup::APickup()
 	PrimaryActorTick.bCanEverTick = false;
 
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>("Pickup Mesh");
-	//PickupMesh->SetSimulate //This line is incase we want item physics, pref not for now maybe in the future =)
+	//PickupMesh->SetSimulate //This line is incase we want item physics, pref not for now maybe in the future )
 	SetRootComponent(PickupMesh);
 
 }
@@ -25,7 +25,6 @@ void APickup::BeginPlay()
 	Super::BeginPlay();
 
 	InitializePickup(UItemBase::StaticClass(), ItemQuantity);
-	
 }
 
 
