@@ -5,10 +5,18 @@
 #include "BackroomsGame/Public/Components/InventoryComponent.h"
 
 //Constructor
-UItemBase::UItemBase()
+UItemBase::UItemBase() : bIsCopy(false), bIsPickup(false)
 {
 	
 }
+
+void UItemBase::ResetItemFlags()
+{
+	bIsCopy = false;
+	bIsPickup = false;
+	
+}
+
 //Copy items
 UItemBase* UItemBase::CreateItemCopy() 
 {
@@ -21,7 +29,7 @@ UItemBase* UItemBase::CreateItemCopy()
 	ItemCopy -> TextDescription = this -> TextDescription;
 	ItemCopy ->ItemStatistics = this -> ItemStatistics;
 	ItemCopy -> AssetData = this -> AssetData;
-	
+	ItemCopy -> bIsCopy = true;
 
 	return ItemCopy;
 }
@@ -30,7 +38,7 @@ void UItemBase::SetQuantity(const int32 NewQuantity)
 {
 	if(NewQuantity != Quantity)
 	{
-		Quantity = FMath::Clamp(NewQuantity, 0, NumericData.IsStackable ? NumericData.MaxStackSize: 1 );
+		Quantity = FMath::Clamp(NewQuantity, 0, NumericData.bIsStackable ? NumericData.MaxStackSize: 1 );
 
 		if(OwningInventory)
 		{

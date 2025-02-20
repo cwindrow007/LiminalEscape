@@ -68,12 +68,10 @@ protected:
 	virtual void BeginPlay() override;
 	
 	virtual void Interact(AFirstPersonCharacter* PlayerCharacter) override;
-	void UpdateInteractableDate();
+	void UpdateInteractableData();
 
 	void takePickup(const AFirstPersonCharacter* Taker);
 
-#if WITH_EDITOR
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-#endif
+
 	
 };

@@ -38,7 +38,7 @@ struct FItemAddResult
 	UPROPERTY(BlueprintReadOnly, Category = "Item Add Result")
 	FText ResultMessage;
 
-	static FItemAddResult AdddedNone(const FText& ErrorText)
+	static FItemAddResult AddedNone(const FText& ErrorText)
 	{
 		FItemAddResult AddedNoneResult;
 		AddedNoneResult.ActualAmountAdded = 0;
@@ -111,7 +111,7 @@ public:
 	//Setters
 
 	UFUNCTION(Category = "Inventory")
-	FORCEINLINE void SetSlotscapacity(const int32 NewSlotsCapacity) {InventorySlotsCapacity = NewSlotsCapacity; };
+	FORCEINLINE void SetSlotsCapacity(const int32 NewSlotsCapacity) {InventorySlotsCapacity = NewSlotsCapacity; };
 	
 
 protected:
@@ -129,11 +129,11 @@ protected:
 	//=============================================================================
 	virtual void BeginPlay() override;
 
-	FItemAddResult HandleNonStackableItems(UItemBase*, int32 RequestedAddAmount);
+	FItemAddResult HandleNonStackableItems(UItemBase* InputItem, int32 RequestedAddAmount);
 	int32 HandleStackableItems(UItemBase*, int32 RequestedAddAmount);
 	int32 CalculateNumberForFullStack(UItemBase* StackableItem, int32 InitialRequestedAddAmount);
 
-	void AddNewItem(UItemBase* item, const int32 AmountToAdd);
+	void AddNewItem(UItemBase* Item, const int32 AmountToAdd);
 
 	
 };

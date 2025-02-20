@@ -48,12 +48,17 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 	FItemAssetData AssetData;
 
+	bool bIsCopy;
+	bool bIsPickup;
+
 	//=============================================================================
 	// FUNCTIONS
 	//=============================================================================
 
 	//Constructor For Accessing Items
 	UItemBase();
+
+	void ResetItemFlags();
 
 	UFUNCTION(Category = "Item")
 	UItemBase* CreateItemCopy();

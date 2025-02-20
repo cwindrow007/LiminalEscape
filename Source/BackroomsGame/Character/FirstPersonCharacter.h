@@ -12,6 +12,7 @@
 #include "SanitySystem.h"
 #include "BackroomsGame/Interfaces/InteractionInterface.h"
 #include "BackroomsGame/Menus/HazzyHUD.h"
+#include "BackroomsGame/Public/Components/InventoryComponent.h"
 #include "FirstPersonCharacter.generated.h"
 
 
@@ -50,6 +51,10 @@ public:
 
 	FORCEINLINE bool IsInteracting() const{ return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); };
 
+	FORCEINLINE UInventoryComponent* GetInventory() const {return PlayerInventory; };
+
+	void UpdateInteractionWidget() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -62,7 +67,7 @@ protected:
 
 	//Interactions Handler
 
-	UPROPERTY(VisibleAnywhere, Category = "Interaction")
+	UPROPERTY(VisibleAnywhere, Category = "Character | Interaction")
 	TScriptInterface<IInteractionInterface> TargetInteractable;
 
 	float InteractionCheckFrequency;
@@ -72,6 +77,9 @@ protected:
 	FTimerHandle TimerHandle_Interaction;
 
 	FInteractionData InteractionData;
+
+	UPROPERTY(VisibleAnywhere, Category ="Character | Inventory")
+	UInventoryComponent* PlayerInventory;
 
 	//Interaction Check Functions
 	void PerformInteractionCheck();

@@ -25,7 +25,42 @@ void UInventoryComponent::BeginPlay()
 
 FItemAddResult UInventoryComponent::HandleAddItem(UItemBase* InputItem)
 {
-	
+	if(GetOwner())
+	{
+		const int32 InitialRequestedAddAmount = InputItem->Quantity;
+
+		//Handle non-stackable items
+		if(!InputItem->NumericData.bIsStackable)
+		{
+			return HandleNonStackableItems(InputItem, InitialRequestedAddAmount);
+		}
+		//Handle Stackable
+		const int32 StackableAmountAdded = HandleStackableItems(InputItem, InitialRequestedAddAmount);
+
+		if(StackableAmountAdded == InitialRequestedAddAmount)
+		{
+			return FItemAddResult::AddedAll(InitialRequestedAddAmount, FText::Format(
+				FText::FromString("Successfully Added {0}{1} to the inventory."),
+				InitialRequestedAddAmount,
+				InputItem->TextDescription.Name));
+		}
+		if(StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded > 0)
+		{
+			return FItemAddResult::AddedPartial(StackableAmountAdded, FText::Format(
+				FText::FromString("Partial amount of {0} added to the inventory, Number added - [1]"),
+				InputItem->TextDescription.Name,
+				StackableAmountAdded));
+		}
+
+		if(StackableAmountAdded <= 0)
+		{
+			return FItemAddResult::AddedNone(FText::Format(
+				FText::FromString("Couldn't add {0} to the inventory, No remaining slots or invalid item."),
+				InputItem->TextDescription.Name));
+		}
+	}
+	check(false);
+	return FItemAddResult::AddedNone(FText::FromString("TryAddItem fallthrough error, GetOwner() check somehow failed."));
 }
 
 UItemBase* UInventoryComponent::FindMatchingItem(UItemBase* ItemIn) const
@@ -92,12 +127,27 @@ void UInventoryComponent::SplitExistingStack(UItemBase* ItemIn, const int32 Amou
 	}
 }
 
-FItemAddResult UInventoryComponent::HandleNonStackableItems(UItemBase*, int32 RequestedAddAmount)
+FItemAddResult UInventoryComponent::HandleNonStackableItems(UItemBase* InputItem, int32 RequestedAddAmount)
 {
+	if(InventoryContents.Num() + 1 > InventorySlotsCapacity)
+	{
+		return FItemAddResult::AddedNone(FText::Format(
+			FText::FromString("Could not add {0} to the inventory, Item has Invalid Value."), InputItem->TextDescription.Name));
+	}
+	AddNewItem(InputItem, RequestedAddAmount);
+	return FItemAddResult::AddedAll(RequestedAddAmount, FText::Format(
+		FText::FromString("Succesfully Added {0} {1} TO the inventory."), RequestedAddAmount, InputItem->TextDescription.Name));
+
+
+
+		
 }
 
 int32 UInventoryComponent::HandleStackableItems(UItemBase*, int32 RequestedAddAmount)
 {
+
+	return 0;
+	
 }
 
 int32 UInventoryComponent::CalculateNumberForFullStack(UItemBase* StackableItem, int32 InitialRequestedAddAmount)
@@ -107,8 +157,24 @@ int32 UInventoryComponent::CalculateNumberForFullStack(UItemBase* StackableItem,
 	return FMath::Min(InitialRequestedAddAmount, AddAmountToMakeFullStack);
 }
 
-void UInventoryComponent::AddNewItem(UItemBase* item, const int32 AmountToAdd)
+void UInventoryComponent::AddNewItem(UItemBase* Item, const int32 AmountToAdd)
 {
+	UItemBase* NewItem;
+
+	if(Item->bIsCopy || Item->bIsPickup)
+	{
+		NewItem = Item;
+		NewItem->ResetItemFlags();
+	}
+	else
+	{
+		NewItem = Item->CreateItemCopy();
+	}
+	NewItem->OwningInventory = this;
+	NewItem->SetQuantity(AmountToAdd);
+
+	InventoryContents.Add(NewItem);
+	OnInventoryUpdated.Broadcast();
 }
 
 

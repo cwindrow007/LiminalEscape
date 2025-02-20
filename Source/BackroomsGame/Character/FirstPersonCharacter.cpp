@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-//Dependencies
+//Game
 #include "FirstPersonCharacter.h"
+#include "BackroomsGame/Menus/HazzyHUD.h"
+#include "BackroomsGame/Public/Components/InventoryComponent.h"
+
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -37,6 +40,9 @@ AFirstPersonCharacter::AFirstPersonCharacter()
     //Interaction Time
     InteractionCheckFrequency = 0.1;
     InteractionCheckDistance = 235.0f;
+
+    PlayerInventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("PLAYERINVENTORY"));
+    PlayerInventory->SetSlotsCapacity(20);
 }
 
 // Called when the game starts or when spawned
@@ -106,6 +112,7 @@ void AFirstPersonCharacter::Tick(float DeltaSeconds)
     // UpdateHeadbob(DeltaTime);
     //}
 }
+
 
 //Hazzy Move Forward
 void AFirstPersonCharacter::HazzyMove(const FInputActionValue& Value)
@@ -302,6 +309,12 @@ void AFirstPersonCharacter::Interact()
     }
 }
 
-
+void AFirstPersonCharacter::UpdateInteractionWidget() const
+{
+    if(IsValid(TargetInteractable.GetObject()))
+    {
+        HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+    }
+}
 
 

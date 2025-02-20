@@ -5,6 +5,7 @@
 #include "BackroomsGame/Inventory/Items/ItemBase.h"
 #include "OverloadMacros.ush"
 #include "BackroomsGame/Menus/InventoryWidget/InventoryPanel.h"
+#include "BackroomsGame/Public/Components/InventoryComponent.h"
 
 // Sets default values
 APickup::APickup()
@@ -47,7 +48,7 @@ void APickup::InitializePickup(const TSubclassOf<UItemBase> BaseClass, const int
 
 		PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
 
-		UpdateInteractableDate();
+		UpdateInteractableData();
 	}
 	
 }
@@ -56,11 +57,11 @@ void APickup::InitializeDrop(UItemBase* ItemToDrop, const int32 InQuantity)
 {
 	ItemReference = ItemToDrop;
 	InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
-	UpdateInteractableDate();
+	UpdateInteractableData();
 	
 }
 
-void APickup::UpdateInteractableDate()
+void APickup::UpdateInteractableData()
 {
 	InstanceInteractableData.InteractableType = EInteractableType::Pickup;
 	InstanceInteractableData.Action = ItemReference->TextDescription.InteractionText;
@@ -97,32 +98,36 @@ void APickup::Interact(AFirstPersonCharacter* PlayerCharacter)
 
 void APickup::takePickup(const AFirstPersonCharacter* Taker)
 {
-	if(IsPendingKillPending())
+	if(!IsPendingKillPending())
 	{
 		if(ItemReference)
 		{
-			//if(UInventoryComponent* PlayerInventory = Taker->GetInventory())
-
-			//Try to add item to player inventory based on result of the add operation
-			//Adjust or destroy item
-		}
-	}
-}
-
-void APickup::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	const FName ChangedPropertyName = PropertyChangedEvent.Property ? PropertyChangedEvent.Property->GetFName() : NAME_None;
-
-	if(ChangedPropertyName == GET_MEMBER_NAME_CHECKED(APickup, DesiredItemID))
-	{
-		if(ItemDataTable)
-		{
-			if (const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(DesiredItemID, DesiredItemID.ToString()))
+			if(UInventoryComponent* PlayerInventory = Taker->GetInventory())
 			{
-				PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
+				const FItemAddResult AddResult = PlayerInventory->HandleAddItem(ItemReference);
+
+				switch(AddResult.OperationResult)
+				{
+				case EItemAddResult::IAR_NoItemAdded:
+					break;
+				case EItemAddResult::IAR_PartialAmountItemAdded:
+					UpdateInteractableData();
+					Taker->UpdateInteractionWidget();
+					break;
+				case EItemAddResult::IAR_AllItemsAdded:
+					Destroy();
+					break;
+				}
+				UE_LOG(LogTemp, Warning, TEXT("%s"), &AddResult.ResultMessage.ToString());
 			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Player inventory Component is full"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Pickup internal item reference was somehow NULL!"));
 		}
 	}
 }
