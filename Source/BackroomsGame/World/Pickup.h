@@ -7,7 +7,9 @@
 #include "BackroomsGame/Interfaces/InteractionInterface.h"
 #include "BackroomsGame/Inventory/Items/ItemBase.h"
 #include "GameFramework/Actor.h"
+#include "OverloadMacros.ush" 
 #include "Pickup.generated.h"
+
 
 UCLASS()
 class BACKROOMSGAME_API APickup : public AActor, public IInteractionInterface
@@ -69,4 +71,9 @@ protected:
 	void UpdateInteractableDate();
 
 	void takePickup(const AFirstPersonCharacter* Taker);
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+	
 };

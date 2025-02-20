@@ -3,6 +3,7 @@
 
 #include "BackroomsGame/World/Pickup.h"
 #include "BackroomsGame/Inventory/Items/ItemBase.h"
+#include "OverloadMacros.ush"
 #include "BackroomsGame/Menus/InventoryWidget/InventoryPanel.h"
 
 // Sets default values
@@ -107,6 +108,25 @@ void APickup::takePickup(const AFirstPersonCharacter* Taker)
 		}
 	}
 }
+
+void APickup::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	const FName ChangedPropertyName = PropertyChangedEvent.Property ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+
+	if(ChangedPropertyName == GET_MEMBER_NAME_CHECKED(APickup, DesiredItemID))
+	{
+		if(ItemDataTable)
+		{
+			if (const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(DesiredItemID, DesiredItemID.ToString()))
+			{
+				PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
+			}
+		}
+	}
+}
+
 
 
 
