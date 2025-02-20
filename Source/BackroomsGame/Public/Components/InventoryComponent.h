@@ -6,6 +6,10 @@
 #include "Components/ActorComponent.h"
 #include "InventoryComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated);
+
+class UItemBase;
+
 UENUM(BlueprintType)
 enum class EItemAddResult : uint8
 {
@@ -69,12 +73,67 @@ class BACKROOMSGAME_API UInventoryComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
+	//=============================================================================
+	//PROPERTIES AND VARIABLES 
+	//=============================================================================
+
+	FOnInventoryUpdated OnInventoryUpdated;
+
+	//=============================================================================
+	// Functions
+	//=============================================================================
 	UInventoryComponent();
 
+	UFUNCTION(Category = "Inventory")
+	FItemAddResult HandleAddItem(UItemBase* InputItem);
+
+	UFUNCTION(Category = "Inventory")
+	UItemBase* FindMatchingItem(UItemBase* ItemIn) const;
+	UFUNCTION(Category = "Inventory")
+	UItemBase* FindNextItemById(UItemBase* ItemIn) const;
+	UFUNCTION(Category = "Inventory")
+	UItemBase* FindNextPartialStack(UItemBase* ItemIn) const;
+
+
+	UFUNCTION(Category = "Inventory")
+	void RemoveSingleInstanceOfItem(UItemBase* ItemToRemove);
+	UFUNCTION(Category = "Inventory")
+	int32 RemoveAmountOfItem(UItemBase* ItemIn, int32 DesiredAmountToRemove);
+	UFUNCTION(Category = "Inventory")
+	void SplitExistingStack(UItemBase* ItemIn, const int32 AmountToSplit);
+
+	//Getters
+	UFUNCTION(Category = "Inventory")
+	FORCEINLINE int32 GetSlotsCapacity() const {return InventorySlotsCapacity; };
+	UFUNCTION(Category = "Inventory")
+	FORCEINLINE TArray<UItemBase*> GetInventoryContents() const{return InventoryContents; };
+
+	//Setters
+
+	UFUNCTION(Category = "Inventory")
+	FORCEINLINE void SetSlotscapacity(const int32 NewSlotsCapacity) {InventorySlotsCapacity = NewSlotsCapacity; };
+	
+
 protected:
-	// Called when the game starts
+	//=============================================================================
+	//PROPERTIES AND VARIABLES 
+	//=============================================================================
+
+	UPROPERTY(EditInstanceOnly, Category = "Inventory")
+	int32 InventorySlotsCapacity;
+	UPROPERTY(VisibleAnywhere, Category = "Inventory")
+	TArray<TObjectPtr<UItemBase>> InventoryContents;
+
+	//=============================================================================
+	// Functions
+	//=============================================================================
 	virtual void BeginPlay() override;
+
+	FItemAddResult HandleNonStackableItems(UItemBase*, int32 RequestedAddAmount);
+	int32 HandleStackableItems(UItemBase*, int32 RequestedAddAmount);
+	int32 CalculateNumberForFullStack(UItemBase* StackableItem, int32 InitialRequestedAddAmount);
+
+	void AddNewItem(UItemBase* item, const int32 AmountToAdd);
 
 	
 };

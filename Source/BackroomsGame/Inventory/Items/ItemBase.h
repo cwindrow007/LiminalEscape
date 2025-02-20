@@ -7,7 +7,7 @@
 #include "BackroomsGame/Inventory/Data/ItemDataStructs.h"
 #include "ItemBase.generated.h"
 
-
+class UInventoryComponent;
 
 UCLASS()
 class BACKROOMSGAME_API UItemBase : public UObject
@@ -20,8 +20,8 @@ public:
 	//PROPERTIES AND VARIABLES FOR INVSYS
 	//=============================================================================
 
-	//UPROPERTY()
-	//UInventoryComponent* OwningInventory;
+	UPROPERTY()
+	UInventoryComponent* OwningInventory;
 	
 	UPROPERTY(EditAnywhere, Category = "Item Base", meta = (UIMin = 1, UIMax = 5));
 	int32 Quantity;

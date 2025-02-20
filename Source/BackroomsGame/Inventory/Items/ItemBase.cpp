@@ -2,6 +2,7 @@
 
 
 #include "ItemBase.h"
+#include "BackroomsGame/Public/Components/InventoryComponent.h"
 
 //Constructor
 UItemBase::UItemBase()
@@ -31,16 +32,15 @@ void UItemBase::SetQuantity(const int32 NewQuantity)
 	{
 		Quantity = FMath::Clamp(NewQuantity, 0, NumericData.IsStackable ? NumericData.MaxStackSize: 1 );
 
-		/*if(OwningInventory)
+		if(OwningInventory)
 		{
-			if(quantity <= 0)
+			if(Quantity <= 0)
 			{
-			owningInventory->RemoveItem(this);
-
+				OwningInventory->RemoveSingleInstanceOfItem(this);
 			}
 			
 		}
-		*/
+		
 	}
 	
 }
