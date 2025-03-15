@@ -21,6 +21,7 @@ AFirstPersonCharacter::AFirstPersonCharacter()
 {
     // Set size for Collision Capsule
     GetCapsuleComponent()->InitCapsuleSize(66.f, 155.0f);
+    
 
     // Create mesh component
     FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
