@@ -14,7 +14,7 @@ APickup::APickup()
 	PrimaryActorTick.bCanEverTick = false;
 
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>("Pickup Mesh");
-	//PickupMesh->SetSimulate //This line is incase we want item physics, pref not for now maybe in the future )
+	//PickupMesh->SetSimulate //This line is in case we want item physics, pref not for now maybe in the future
 	SetRootComponent(PickupMesh);
 
 }
@@ -34,11 +34,12 @@ void APickup::InitializePickup(const TSubclassOf<UItemBase> BaseClass, const int
 	{
 		const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(DesiredItemID, DesiredItemID.ToString());
 
+		
 		ItemReference = NewObject<UItemBase>(this, BaseClass);
 
-		ItemReference->ID = ItemData ->ID;
+		ItemReference->ID = ItemData->ID;
 		ItemReference->ItemType = ItemData->ItemType;
-		ItemReference->ItemQuality = ItemData ->ItemQuality;
+		ItemReference->ItemQuality = ItemData->ItemQuality;
 		ItemReference->NumericData = ItemData->NumericData;
 		ItemReference->TextDescription = ItemData->TextDescription;
 		ItemReference->AssetData = ItemData->AssetData;
@@ -56,6 +57,7 @@ void APickup::InitializeDrop(UItemBase* ItemToDrop, const int32 InQuantity)
 {
 	ItemReference = ItemToDrop;
 	InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
+	PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
 	UpdateInteractableData();
 	
 }
@@ -64,8 +66,8 @@ void APickup::UpdateInteractableData()
 {
 	InstanceInteractableData.InteractableType = EInteractableType::Pickup;
 	InstanceInteractableData.Action = ItemReference->TextDescription.InteractionText;
-	InstanceInteractableData.Name = ItemReference -> TextDescription.Name;
-	InstanceInteractableData.Quantity = ItemReference ->Quantity;
+	InstanceInteractableData.Name = ItemReference->TextDescription.Name;
+	InstanceInteractableData.Quantity = ItemReference->Quantity;
 	InteractableData = InstanceInteractableData;
 }
 
