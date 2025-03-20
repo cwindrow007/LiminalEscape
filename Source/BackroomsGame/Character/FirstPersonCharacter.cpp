@@ -174,6 +174,8 @@ void AFirstPersonCharacter::StopSprint()
     NewLocation.Z += FMath::Sin(GetWorld()->TimeSeconds * HeadbobFrequency) * HeadbobAmplitude;
 }
 */
+
+
 //==================================================
 //INTERACTION FUNCTIONS
 //==================================================
@@ -182,7 +184,7 @@ void AFirstPersonCharacter::PerformInteractionCheck()
 {
     InteractionData.LastInteractionCheckTime = GetWorld()-> GetTimeSeconds();
 
-    FVector TraceStart{GetPawnViewLocation()};
+    FVector TraceStart{GetPawnViewLocation() + 30.f};
     FVector TraceEnd{TraceStart + (GetViewRotation().Vector() * InteractionCheckDistance)};
 
     float LookDirection = FVector::DotProduct(GetActorForwardVector(), GetViewRotation().Vector());
@@ -191,7 +193,7 @@ void AFirstPersonCharacter::PerformInteractionCheck()
     {
         //!This is the line debugger incase you want to check item checks
         //! 
-       // DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
+        //DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
 
         //Line Tracing
         FCollisionQueryParams QueryParams;
